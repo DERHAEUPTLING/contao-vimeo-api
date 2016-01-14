@@ -1,0 +1,58 @@
+<?php
+
+/**
+ * vimeo_api extension for Contao Open Source CMS
+ *
+ * Copyright (C) 2016 derhaeuptling
+ *
+ * @author  derhaeuptling <https://derhaeuptling.com>
+ * @author  Codefog <http://codefog.pl>
+ * @author  Kamil Kuzminski <kamil.kuzminski@codefog.pl>
+ * @license LGPL
+ */
+
+/**
+ * Add palettes
+ */
+$GLOBALS['TL_DCA']['tl_content']['palettes']['__selector__'][]        = 'vimeo_customPoster';
+$GLOBALS['TL_DCA']['tl_content']['palettes']['vimeo_video']           = '{type_legend},type,headline;{source_legend},vimeo_videoId;{poster_legend:hide},vimeo_customPoster;{player_legend},playerSize,vimeo_lightbox;{template_legend:hide},customTpl,vimeo_template,size;{protected_legend:hide},protected;{expert_legend:hide},guests,cssID,space;{invisible_legend:hide},invisible,start,stop';
+$GLOBALS['TL_DCA']['tl_content']['subpalettes']['vimeo_customPoster'] = 'singleSRC';
+
+/**
+ * Add fields
+ */
+$GLOBALS['TL_DCA']['tl_content']['fields']['vimeo_videoId'] = [
+    'label'                   => &$GLOBALS['TL_LANG']['tl_content']['vimeo_videoId'],
+    'exclude'                 => true,
+    'inputType'               => 'text',
+    'eval'                    => array('mandatory'=>true, 'maxlength'=>32, 'tl_class'=>'w50'),
+    'sql'                     => "varchar(32) NOT NULL default ''"
+];
+
+$GLOBALS['TL_DCA']['tl_content']['fields']['vimeo_lightbox'] = [
+    'label'                   => &$GLOBALS['TL_LANG']['tl_content']['vimeo_lightbox'],
+    'exclude'                 => true,
+    'inputType'               => 'checkbox',
+    'eval'                    => array('tl_class'=>'w50 m12'),
+    'sql'                     => "char(1) NOT NULL default ''"
+];
+
+$GLOBALS['TL_DCA']['tl_content']['fields']['vimeo_customPoster'] = [
+    'label'                   => &$GLOBALS['TL_LANG']['tl_content']['vimeo_customPoster'],
+    'exclude'                 => true,
+    'inputType'               => 'checkbox',
+    'eval'                    => array('submitOnChange'=>true, 'tl_class'=>'clr'),
+    'sql'                     => "char(1) NOT NULL default ''"
+];
+
+$GLOBALS['TL_DCA']['tl_content']['fields']['vimeo_template'] = [
+    'label'                   => &$GLOBALS['TL_LANG']['tl_content']['vimeo_template'],
+    'default'                 => 'vimeo_default',
+    'exclude'                 => true,
+    'inputType'               => 'select',
+    'options_callback'        => function () {
+        return \Controller::getTemplateGroup('vimeo_');
+    },
+    'eval'                    => array('chosen'=>true, 'tl_class'=>'w50'),
+    'sql'                     => "varchar(128) NOT NULL default ''"
+];

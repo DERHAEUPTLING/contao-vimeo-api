@@ -1,0 +1,24 @@
+.vimeo-video {
+    position: relative;
+}
+
+.vimeo-video a {
+    display: block;
+    position: relative;
+    z-index: 2;
+}
+
+.vimeo-video .embed {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+}
+
+.vimeo-video.active .embed {
+    z-index: 3;
+}
+
+#colorbox.vimeo-video-lightbox #cboxLoadedContent {
+    background: #000;
+}

@@ -1,0 +1,39 @@
+{
+    "name": "derhaeuptling/contao-vimeo_api",
+    "description": "Vimeo API extension for Contao Open Source CMS",
+    "keywords": ["contao", "vimeo", "video", "player"],
+    "type": "contao-module",
+    "license": "LGPL-3.0+",
+    "authors": [
+        {
+            "name": "derhaeuptling",
+            "homepage": "https://derhaeuptling.com"
+        },
+        {
+            "name": "Codefog",
+            "homepage": "http://codefog.pl"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.2",
+        "contao/core": ">=3.5",
+        "contao-community-alliance/composer-plugin": "2.*"
+    },
+    "autoload": {
+        "psr-0": {
+            "Derhaeuptling\\VimeoApi\\": [
+                "system/modules/vimeo_api/src/"
+            ]
+        }
+    },
+    "replace": {
+        "contao-legacy/vimeo_api": "self.version"
+    },
+    "extra": {
+        "contao": {
+            "sources": {
+                "": "system/modules/vimeo_api"
+            }
+        }
+    }
+}
