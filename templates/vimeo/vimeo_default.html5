@@ -1,49 +1,11 @@
-<?php $GLOBALS['TL_CSS'][] = 'system/modules/vimeo_api/assets/style.min.css'; ?>
-<div id="vimeo-video-<?= $this->id ?>" class="vimeo-video">
+<?php
+$GLOBALS['TL_CSS'][] = 'system/modules/vimeo_api/assets/style.min.css';
+$GLOBALS['TL_JAVASCRIPT'][] = 'system/modules/vimeo_api/assets/script.jquery.min.js';
+?>
+<div class="vimeo-video" data-vimeo-id="<?= $this->id ?>"<?php if ($this->lightbox): ?> data-vimeo-lightbox="true"<?php endif; ?>>
     <a href="#" class="trigger" title="<?= specialchars($this->name) ?>">
         <figure class="image_container">
             <?= $this->insert('picture_default', $this->poster->picture) ?>
         </figure>
     </a>
-
-    <?php if (!$this->lightbox): ?>
-        <div class="embed"></div>
-    <?php endif; ?>
-
-    <script>
-        (function ($) {
-            $(document).ready(function () {
-                var wrapper = $('#vimeo-video-<?= $this->id ?>');
-
-                var iframe = $('<iframe>', {
-                    'src': 'https://player.vimeo.com/video/<?= $this->id ?>?autoplay=1',
-                    'width': '<?= $this->width ?>',
-                    'height': '<?= $this->height ?>',
-                    'frameborder': '0',
-                    'title': '<?= addslashes(specialchars($this->name)) ?>',
-                    'webkitallowfullscreen': true,
-                    'mozallowfullscreen': true,
-                    'allowfullscreen':  true
-                });
-
-                <?php if ($this->lightbox): ?>
-                    wrapper.find('.trigger').colorbox({
-                        'className': 'vimeo-video-lightbox',
-                        'current': 'video {current} of {total}',
-                        'html': $($('<div></div>').html(iframe.clone())).html(),
-                        'loop': false,
-                        'maxWidth': '95%',
-                        'maxHeight': '95%',
-                        'rel': 'vimeo-video'
-                    });
-                <?php else: ?>
-                    wrapper.find('.trigger').on('click', function (e) {
-                        e.preventDefault();
-                        wrapper.find('.embed').append(iframe);
-                        wrapper.addClass('active');
-                    });
-                <?php endif; ?>
-            });
-        })(jQuery);
-    </script>
 </div>

@@ -38,7 +38,6 @@ class VideoElement extends ContentElement
             return;
         }
 
-        $video->setSize(deserialize($this->playerSize, true));
         $video->setPosterSize(deserialize($this->size, true));
 
         // Enable the lightbox

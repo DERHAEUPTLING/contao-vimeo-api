@@ -39,14 +39,12 @@ class AlbumElement extends ContentElement
         $album = $api->getAlbum($client, $this->vimeo_albumId);
         $this->Template->setData($album);
 
-        $playerSize = deserialize($this->playerSize, true);
         $posterSize = deserialize($this->size, true);
         $videos     = [];
 
         // Generate the videos
         /** @var VimeoVideo $video */
         foreach ($api->getAlbumVideos($client, $this->vimeo_albumId) as $video) {
-            $video->setSize($playerSize);
             $video->setPosterSize($posterSize);
 
             // Enable the lightbox

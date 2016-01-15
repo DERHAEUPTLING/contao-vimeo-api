@@ -39,18 +39,6 @@ class VimeoVideo
     protected $data = [];
 
     /**
-     * Width
-     * @var int
-     */
-    protected $width;
-
-    /**
-     * Height
-     * @var int
-     */
-    protected $height;
-
-    /**
      * Poster
      * @var string
      */
@@ -96,17 +84,6 @@ class VimeoVideo
     public function getId()
     {
         return $this->id;
-    }
-
-    /**
-     * Set the size
-     *
-     * @param array $size
-     */
-    public function setSize(array $size)
-    {
-        $this->width  = (int)$size[0];
-        $this->height = (int)$size[1];
     }
 
     /**
@@ -186,8 +163,6 @@ class VimeoVideo
     {
         $template->setData($this->data);
         $template->id       = $this->id;
-        $template->width    = $this->width;
-        $template->height   = $this->height;
         $template->lightbox = $this->lightbox;
 
         $posterHelper = new \stdClass();
