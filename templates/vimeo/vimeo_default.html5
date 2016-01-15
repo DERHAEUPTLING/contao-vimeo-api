@@ -1,11 +1,16 @@
 <?php
 $GLOBALS['TL_CSS'][] = 'system/modules/vimeo_api/assets/style.min.css';
+$GLOBALS['TL_JAVASCRIPT'][] = 'system/modules/vimeo_api/assets/froogaloop.min.js';
 $GLOBALS['TL_JAVASCRIPT'][] = 'system/modules/vimeo_api/assets/script.jquery.min.js';
 ?>
-<div class="vimeo-video" data-vimeo-id="<?= $this->id ?>"<?php if ($this->lightbox): ?> data-vimeo-lightbox="true"<?php endif; ?>>
+<div class="vimeo-video" data-vimeo-video<?php if ($this->lightbox): ?> data-vimeo-lightbox="true" data-vimeo-lightbox-width="<?= $this->lightboxSize[0] ?>" data-vimeo-lightbox-height="<?= $this->lightboxSize[1] ?>"<?php if ($this->lightboxAutoplay): ?> data-vimeo-lightbox-autoplay="true"<?php endif; ?><?php endif; ?>>
     <a href="#" class="trigger" title="<?= specialchars($this->name) ?>">
         <figure class="image_container">
             <?= $this->insert('picture_default', $this->poster->picture) ?>
         </figure>
     </a>
+
+    <div class="embed">
+        <iframe id="vimeo-video-<?= $this->id ?>" src="https://player.vimeo.com/video/<?= $this->id ?>?api=1&amp;player_id=vimeo-video-<?= $this->id ?>" width="100%" height="100%" frameborder="0" title="<?= specialchars($this->name) ?>" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+    </div>
 </div>

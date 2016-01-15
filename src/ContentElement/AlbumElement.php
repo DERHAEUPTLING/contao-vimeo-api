@@ -28,6 +28,24 @@ class AlbumElement extends ContentElement
     protected $strTemplate = 'ce_vimeo_album';
 
     /**
+     * Extend the parent method
+     *
+     * @return string
+     */
+    public function generate()
+    {
+        if ($this->vimeo_albumId == '') {
+            return '';
+        }
+
+        if (TL_MODE == 'BE') {
+            return '<p><a href="https://vimeo.com/album/' . $this->vimeo_albumId . '" target="_blank">https://vimeo.com/album/' . $this->vimeo_albumId . '</a></p>';
+        }
+
+        return parent::generate();
+    }
+
+    /**
      * Generate the content element
      */
     protected function compile()
@@ -39,8 +57,9 @@ class AlbumElement extends ContentElement
         $album = $api->getAlbum($client, $this->vimeo_albumId);
         $this->Template->setData($album);
 
-        $posterSize = deserialize($this->size, true);
-        $videos     = [];
+        $posterSize   = deserialize($this->size, true);
+        $lightboxSize = deserialize($this->vimeo_lightboxSize, true);
+        $videos       = [];
 
         // Generate the videos
         /** @var VimeoVideo $video */
@@ -50,6 +69,12 @@ class AlbumElement extends ContentElement
             // Enable the lightbox
             if ($this->vimeo_lightbox) {
                 $video->enableLightbox();
+                $video->setLightboxSize($lightboxSize);
+
+                // Enable the lightbox autoplay
+                if ($this->vimeo_lightboxAutoplay) {
+                    $video->enableLightboxAutoplay();
+                }
             }
 
             $videos[] = $video->generate(new FrontendTemplate($this->vimeo_template));

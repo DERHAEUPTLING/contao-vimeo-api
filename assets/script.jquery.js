@@ -1,36 +1,39 @@
 ;(function ($) {
     $(document).ready(function () {
-        $('[data-vimeo-id]').each(function () {
+        $('[data-vimeo-video]').each(function () {
             var video = $(this);
             var trigger = video.find('.trigger');
-
-            var iframe = $('<iframe>', {
-                'src': 'https://player.vimeo.com/video/' + video.data('vimeo-id') + '?autoplay=1',
-                'width': '100%',
-                'height': '100%',
-                'frameborder': 0,
-                'webkitallowfullscreen': true,
-                'mozallowfullscreen': true,
-                'allowfullscreen':  true
-            });
+            var iframe = video.find('iframe');
+            var player = $f(iframe[0]);
 
             if (video.data('vimeo-lightbox')) {
+                player.addEvent('ready', function () {
+                    if (iframe.parents('#colorbox').length) {
+                        player.api('play');
+
+                        if (video.data('vimeo-lightbox-autoplay')) {
+                            player.addEvent('finish', function () {
+                                $.colorbox.next();
+                            });
+                        }
+                    }
+                });
+
                 trigger.colorbox({
                     'className': 'vimeo-video-lightbox',
                     'current': 'video {current} of {total}',
-                    'html': $($('<div></div>').html(iframe.clone())).html(),
+                    'inline': true,
+                    'href': '#' + iframe.attr('id'),
                     'loop': false,
-                    'maxWidth': '95%',
-                    'maxHeight': '95%',
-                    'rel': 'vimeo-video'
+                    'rel': 'vimeo-video',
+                    'innerHeight': video.data('vimeo-lightbox-height'),
+                    'innerWidth': video.data('vimeo-lightbox-width')
                 });
             } else {
-                var embed = $('<div>', {'class': 'embed'});
-
                 trigger.on('click', function (e) {
                     e.preventDefault();
-                    embed.append(iframe).appendTo(video);
                     video.addClass('active');
+                    player.api('play');
                 });
             }
         });

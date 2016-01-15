@@ -57,6 +57,18 @@ class VimeoVideo
     protected $lightbox = false;
 
     /**
+     * Lightbox size
+     * @var array
+     */
+    protected $lightboxSize = [];
+
+    /**
+     * Lightbox autoplay
+     * @var bool
+     */
+    protected $lightboxAutoplay = false;
+
+    /**
      * Images folder
      * @var string
      */
@@ -141,6 +153,32 @@ class VimeoVideo
     }
 
     /**
+     * Enable the lightbox autoplay
+     */
+    public function enableLightboxAutoplay()
+    {
+        $this->lightboxAutoplay = true;
+    }
+
+    /**
+     * Disable the lightbox autoplay
+     */
+    public function disableLightboxAutoplay()
+    {
+        $this->lightboxAutoplay = true;
+    }
+
+    /**
+     * Set the lightbox size
+     *
+     * @param array $lightboxSize
+     */
+    public function setLightboxSize(array $lightboxSize)
+    {
+        $this->lightboxSize = $lightboxSize;
+    }
+
+    /**
      * Generate the video
      *
      * @param FrontendTemplate $template
@@ -162,8 +200,14 @@ class VimeoVideo
     public function addToTemplate(FrontendTemplate $template)
     {
         $template->setData($this->data);
-        $template->id       = $this->id;
-        $template->lightbox = $this->lightbox;
+        $template->id = $this->id;
+
+        // Add lightbox features
+        if ($this->lightbox) {
+            $template->lightbox         = true;
+            $template->lightboxAutoplay = $this->lightboxAutoplay ? true : false;
+            $template->lightboxSize     = $this->lightboxSize;
+        }
 
         $posterHelper = new \stdClass();
         Controller::addImageToTemplate($posterHelper, [
