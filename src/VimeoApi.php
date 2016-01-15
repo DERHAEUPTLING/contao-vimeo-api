@@ -82,4 +82,76 @@ class VimeoApi
 
         return new VimeoVideo($videoId, $videoData, $this->cache);
     }
+
+    /**
+     * Get the album
+     *
+     * @param Vimeo  $client
+     * @param string $albumId
+     *
+     * @return array
+     */
+    public function getAlbum(Vimeo $client, $albumId)
+    {
+        if ($this->cache->hasAlbumData($albumId) === true) {
+            $albumData = $this->cache->getAlbumData($albumId);
+        } else {
+            $data = $client->request('/albums/' . $albumId);
+
+            if ($data['status'] !== 200) {
+                System::log(sprintf('Unable to fetch Vimeo album ID %s with error "%s" (status code: %s)', $albumId, $data['body']['error'], $data['status']), __METHOD__, TL_ERROR);
+
+                return [];
+            }
+
+            $albumData = $data['body'];
+
+            // Cache the album data
+            $this->cache->setAlbumData($albumId, $albumData);
+        }
+
+        return (array) $albumData;
+    }
+
+    /**
+     * Get the album videos
+     *
+     * @param Vimeo  $client
+     * @param string $albumId
+     *
+     * @return array
+     */
+    public function getAlbumVideos(Vimeo $client, $albumId)
+    {
+        if ($this->cache->hasAlbumVideosData($albumId) === true) {
+            $albumVideosData = $this->cache->getAlbumVideosData($albumId);
+        } else {
+            $data = $client->request('/albums/' . $albumId . '/videos');
+
+            if ($data['status'] !== 200) {
+                System::log(sprintf('Unable to fetch Vimeo album ID %s with error "%s" (status code: %s)', $albumId, $data['body']['error'], $data['status']), __METHOD__, TL_ERROR);
+
+                return [];
+            }
+
+            $albumVideosData = $data['body'];
+
+            // Cache the album videos data
+            $this->cache->setAlbumVideosData($albumId, $albumVideosData);
+        }
+
+        if ($albumVideosData === null) {
+            return [];
+        }
+
+        $videos = [];
+
+        // Generate videos
+        foreach ($albumVideosData['data'] as $videoData) {
+            $videoId  = (int)str_replace('/videos/', '', $videoData['uri']);
+            $videos[] = new VimeoVideo($videoId, $videoData, $this->cache);
+        }
+
+        return $videos;
+    }
 }

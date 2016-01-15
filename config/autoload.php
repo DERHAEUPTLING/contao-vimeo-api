@@ -23,6 +23,7 @@ ClassLoader::addClasses([
     'Derhaeuptling\VimeoApi\VimeoApi'                    => 'system/modules/vimeo_api/src/VimeoApi.php',
     'Derhaeuptling\VimeoApi\VideoCache'                  => 'system/modules/vimeo_api/src/VideoCache.php',
     'Derhaeuptling\VimeoApi\VimeoVideo'                  => 'system/modules/vimeo_api/src/VimeoVideo.php',
+    'Derhaeuptling\VimeoApi\ContentElement\AlbumElement' => 'system/modules/vimeo_api/src/ContentElement/AlbumElement.php',
     'Derhaeuptling\VimeoApi\ContentElement\VideoElement' => 'system/modules/vimeo_api/src/ContentElement/VideoElement.php',
 ]);
 
@@ -31,6 +32,7 @@ ClassLoader::addClasses([
  */
 TemplateLoader::addFiles([
     // Content elements
+    'ce_vimeo_album' => 'system/modules/vimeo_api/templates/elements',
     'ce_vimeo_video' => 'system/modules/vimeo_api/templates/elements',
 
     // Vimeo

@@ -14,6 +14,7 @@
 /**
  * Content elements
  */
+$GLOBALS['TL_CTE']['media']['vimeo_album'] = 'Derhaeuptling\VimeoApi\ContentElement\AlbumElement';
 $GLOBALS['TL_CTE']['media']['vimeo_video'] = 'Derhaeuptling\VimeoApi\ContentElement\VideoElement';
 
 /**

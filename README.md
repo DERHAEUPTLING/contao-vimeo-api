@@ -1,7 +1,7 @@
 vimeo_api extension for Contao Open Source CMS
 ==============================================
 
-This extension allows you to embed the Vimeo websites on your website. It supports displaying both public and private videos, using custom poster images, viewing video in the lightbox.
+This extension allows you to embed the Vimeo videos and albums on your website. It supports displaying both public and private videos, using custom poster images, viewing video in the lightbox.
 
 The module supports responsive images feature which is implemented by default in Contao.
 

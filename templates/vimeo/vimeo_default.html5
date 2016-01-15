@@ -20,7 +20,7 @@
                     'width': '<?= $this->width ?>',
                     'height': '<?= $this->height ?>',
                     'frameborder': '0',
-                    'title': '<?= specialchars($this->name) ?>',
+                    'title': '<?= addslashes(specialchars($this->name)) ?>',
                     'webkitallowfullscreen': true,
                     'mozallowfullscreen': true,
                     'allowfullscreen':  true

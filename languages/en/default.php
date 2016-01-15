@@ -14,4 +14,5 @@
 /**
  * Content elements
  */
+$GLOBALS['TL_LANG']['CTE']['vimeo_album'] = ['Vimeo album', 'Adds a Vimeo album to the page.'];
 $GLOBALS['TL_LANG']['CTE']['vimeo_video'] = ['Vimeo video', 'Adds a Vimeo video player to the page.'];
