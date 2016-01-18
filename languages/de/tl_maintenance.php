@@ -14,4 +14,4 @@
 /**
  * Maintenance jobs
  */
-$GLOBALS['TL_LANG']['tl_maintenance_jobs']['vimeo'] = ['Purge the Vimeo cache', 'Removes the cached Vimeo video data and image files.'];
+$GLOBALS['TL_LANG']['tl_maintenance_jobs']['vimeo'] = ['Vimeo Cache leeren', 'Löscht zwischengespeicherte Vimeo Daten- und Bild-Dateien.'];

@@ -21,4 +21,4 @@ $GLOBALS['TL_LANG']['tl_settings']['vimeo_accessToken']  = ['Vimeo access token'
 /**
  * Legends
  */
-$GLOBALS['TL_LANG']['tl_settings']['vimeo_legend'] = 'Vimeo settings';
+$GLOBALS['TL_LANG']['tl_settings']['vimeo_legend'] = 'Vimeo Einstellungen';

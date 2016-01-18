@@ -15,6 +15,6 @@
  * Fields
  */
 $GLOBALS['TL_LANG']['tl_content']['vimeo_videoId']      = ['Vimeo video ID', 'Bitte geben Sie die Vimeo video ID.'];
-$GLOBALS['TL_LANG']['tl_content']['vimeo_lightbox']     = ['Video in einer Lightbox öffnen', 'Open the Vimeo video in a lightbox window.'];
-$GLOBALS['TL_LANG']['tl_content']['vimeo_customPoster'] = ['Use custom poster image', 'Choose a custom poster image for this video. If not chosen, the Vimeo video default image will be used.'];
-$GLOBALS['TL_LANG']['tl_content']['vimeo_template']     = ['Vimeo template', 'Here you can choose the Vimeo template.'];
+$GLOBALS['TL_LANG']['tl_content']['vimeo_lightbox']     = ['Video in einer Lightbox öffnen', 'Öffnet das Vimeo Video in einem Lightbox Fenster.'];
+$GLOBALS['TL_LANG']['tl_content']['vimeo_customPoster'] = ['Eigenes Vorschaubild wählen', 'Ein eigenes Vorschaubild für dieses Video auswählen. Wenn nicht ausgewählt, wird das Vimeo Video standart Vorschabild geladen.'];
+$GLOBALS['TL_LANG']['tl_content']['vimeo_template']     = ['Vimeo template', 'Hier können sie das Vimeo Template auswählen.'];
