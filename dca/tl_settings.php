@@ -14,11 +14,19 @@
 /**
  * Extend default palette
  */
-$GLOBALS['TL_DCA']['tl_settings']['palettes']['default'] .= ';{vimeo_legend},vimeo_clientId,vimeo_clientSecret,vimeo_accessToken';
+$GLOBALS['TL_DCA']['tl_settings']['palettes']['default'] .= ';{vimeo_legend},vimeo_explanation,vimeo_clientId,vimeo_clientSecret,vimeo_accessToken';
 
 /**
  * Add fields
  */
+$GLOBALS['TL_DCA']['tl_settings']['fields']['vimeo_explanation'] = [
+    'label'                   => &$GLOBALS['TL_LANG']['tl_settings']['vimeo_explanation'],
+    'exclude'                 => true,
+    'input_field_callback'    => function () {
+        return $GLOBALS['TL_LANG']['tl_settings']['vimeo_explanation'];
+    }
+];
+
 $GLOBALS['TL_DCA']['tl_settings']['fields']['vimeo_clientId'] = [
     'label'                   => &$GLOBALS['TL_LANG']['tl_settings']['vimeo_clientId'],
     'exclude'                 => true,
