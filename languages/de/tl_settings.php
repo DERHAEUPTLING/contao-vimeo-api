@@ -22,7 +22,7 @@ $GLOBALS['TL_LANG']['tl_settings']['vimeo_accessToken']  = ['Vimeo access token'
 /**
  * Reference
  */
-$GLOBALS['TL_LANG']['tl_settings']['vimeo_explanation'] = '<div class="tl_info" style="margin-top:10px;">You have to create the Vimeo app at <a href="https://developer.vimeo.com/apps/" target="_blank">https://developer.vimeo.com/apps/</a> and generate the personal access token.</div>';
+$GLOBALS['TL_LANG']['tl_settings']['vimeo_explanation'] = '<div class="tl_info" style="margin-top:10px;">Erstellen Sie zuerst eine Vimeo App unter <a href="https://developer.vimeo.com/apps/" target="_blank">https://developer.vimeo.com/apps/</a> und generieren Sie ihren persönlichen "access token".</div>';
 
 /**
  * Legends
