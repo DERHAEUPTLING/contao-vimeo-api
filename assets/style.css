@@ -34,3 +34,11 @@
     background: #000;
     overflow: hidden !important;
 }
+
+#colorbox.vimeo-video-lightbox #cboxLoadedContent .embed {
+    background: url("/assets/jquery/colorbox/1.6.1/images/loading.gif") no-repeat center center;
+    width: 100%;
+    height: 100%;
+    min-width: 320px;
+    min-height: 240px;
+}

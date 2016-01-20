@@ -61,7 +61,6 @@ class VideoElement extends ContentElement
         // Enable the lightbox
         if ($this->vimeo_lightbox) {
             $video->enableLightbox();
-            $video->setLightboxSize(deserialize($this->vimeo_lightboxSize, true));
 
             // Enable the lightbox autoplay
             if ($this->vimeo_lightboxAutoplay) {

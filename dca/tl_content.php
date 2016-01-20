@@ -19,7 +19,7 @@ $GLOBALS['TL_DCA']['tl_content']['palettes']['__selector__'][]        = 'vimeo_l
 $GLOBALS['TL_DCA']['tl_content']['palettes']['vimeo_album']           = '{type_legend},type,headline;{source_legend},vimeo_albumId,vimeo_lightbox;{template_legend:hide},customTpl,vimeo_template,size;{protected_legend:hide},protected;{expert_legend:hide},guests,cssID,space;{invisible_legend:hide},invisible,start,stop';
 $GLOBALS['TL_DCA']['tl_content']['palettes']['vimeo_video']           = '{type_legend},type,headline;{source_legend},vimeo_videoId,vimeo_lightbox;{poster_legend:hide},vimeo_customPoster;{template_legend:hide},customTpl,vimeo_template,size;{protected_legend:hide},protected;{expert_legend:hide},guests,cssID,space;{invisible_legend:hide},invisible,start,stop';
 $GLOBALS['TL_DCA']['tl_content']['subpalettes']['vimeo_customPoster'] = 'singleSRC';
-$GLOBALS['TL_DCA']['tl_content']['subpalettes']['vimeo_lightbox']     = 'vimeo_lightboxSize,vimeo_lightboxAutoplay';
+$GLOBALS['TL_DCA']['tl_content']['subpalettes']['vimeo_lightbox']     = 'vimeo_lightboxAutoplay';
 
 /**
  * Add fields
@@ -56,19 +56,11 @@ $GLOBALS['TL_DCA']['tl_content']['fields']['vimeo_lightbox'] = [
     'sql'                     => "char(1) NOT NULL default ''"
 ];
 
-$GLOBALS['TL_DCA']['tl_content']['fields']['vimeo_lightboxSize'] = [
-    'label'                   => &$GLOBALS['TL_LANG']['tl_content']['vimeo_lightboxSize'],
-    'exclude'                 => true,
-    'inputType'               => 'text',
-    'eval'                    => array('mandatory'=>true, 'multiple'=>true, 'size'=>2, 'rgxp'=>'natural', 'nospace'=>true, 'tl_class'=>'w50'),
-    'sql'                     => "varchar(64) NOT NULL default ''"
-];
-
 $GLOBALS['TL_DCA']['tl_content']['fields']['vimeo_lightboxAutoplay'] = [
     'label'                   => &$GLOBALS['TL_LANG']['tl_content']['vimeo_lightboxAutoplay'],
     'exclude'                 => true,
     'inputType'               => 'checkbox',
-    'eval'                    => array('tl_class'=>'w50 m12'),
+    'eval'                    => array('tl_class'=>'clr'),
     'sql'                     => "char(1) NOT NULL default ''"
 ];
 
