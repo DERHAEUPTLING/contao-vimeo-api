@@ -141,16 +141,24 @@
                             player = $f(iframe[0]);
                             players.push(player);
 
-                            // Play!
+                            // Pause the players and activate the video
                             pausePlayers();
                             video.addClass('active');
-                            player.api('play');
+
+                            // Autoplay video on non-mobile devices
+                            if (!$('body').hasClass('mobile')) {
+                                player.api('play');
+                            }
                         });
                     } else {
-                        // Play!
+                        // Pause the players and activate the video
                         pausePlayers();
                         video.addClass('active');
-                        player.api('play');
+
+                        // Autoplay video on non-mobile devices
+                        if (!$('body').hasClass('mobile')) {
+                            player.api('play');
+                        }
                     }
                 });
             }
