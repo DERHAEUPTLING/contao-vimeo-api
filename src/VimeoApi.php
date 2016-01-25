@@ -58,10 +58,11 @@ class VimeoApi
      *
      * @param Vimeo  $client
      * @param string $videoId
+     * @param bool   $albumData
      *
      * @return VimeoVideo
      */
-    public function getVideo(Vimeo $client, $videoId)
+    public function getVideo(Vimeo $client, $videoId, $albumData = true)
     {
         $cacheKey = 'video_' . $videoId;
 
@@ -82,7 +83,67 @@ class VimeoApi
             $this->cache->setData($cacheKey, $videoData);
         }
 
-        return new VimeoVideo($videoId, $videoData, $this->cache);
+        $video = new VimeoVideo($videoId, $videoData, $this->cache);
+
+        // Include the album data
+        if ($albumData === true) {
+            $video->setAlbum($this->getAlbumByVideo($client, $videoId));
+        }
+
+        return $video;
+    }
+
+    /**
+     * Get the parent album of the video
+     *
+     * @param Vimeo  $client
+     * @param string $videoId
+     *
+     * @return array
+     */
+    protected function getAlbumByVideo(Vimeo $client, $videoId)
+    {
+        $cacheKey = 'album_by_video_' . $videoId;
+
+        if ($this->cache->hasData($cacheKey) === true) {
+            $albumData = $this->cache->getData($cacheKey);
+        } else {
+            $endpoint = '/me/albums';
+
+            do {
+                $data = $client->request($endpoint);
+
+                if ($data['status'] !== 200) {
+                    System::log(sprintf('Unable to fetch Vimeo albums from "/me/albums" with error "%s" (status code: %s)', $data['body']['error'], $data['status']), __METHOD__, TL_ERROR);
+
+                    return [];
+                }
+
+                $albumData = [];
+
+                // Find the video in the album
+                foreach ($data['body']['data'] as $subData) {
+                    $videoData = $client->request($subData['uri'] . '/videos/' . $videoId);
+
+                    if ($videoData['status'] === 200) {
+                        $albumData = $subData;
+                        break 2;
+                    }
+                }
+
+                $endpoint = $data['body']['paging']['next'];
+            } while ($endpoint);
+
+            // Unable to find the album data
+            if (!$albumData) {
+                return [];
+            }
+
+            // Cache the album data
+            $this->cache->setData($cacheKey, $albumData);
+        }
+
+        return $albumData;
     }
 
     /**
@@ -122,10 +183,11 @@ class VimeoApi
      *
      * @param Vimeo  $client
      * @param string $albumId
+     * @param bool   $albumData
      *
      * @return array
      */
-    public function getAlbumVideos(Vimeo $client, $albumId)
+    public function getAlbumVideos(Vimeo $client, $albumId, $albumData = true)
     {
         $albumVideosData = $this->getAlbumVideosData($client, $albumId);
 
@@ -133,12 +195,26 @@ class VimeoApi
             return [];
         }
 
+        $album = [];
+
+        // Get the album data
+        if ($albumData === true) {
+            $album = $this->getAlbum($client, $albumId);
+        }
+
         $videos = [];
 
         // Generate videos
         foreach ($albumVideosData['data'] as $videoData) {
             $videoId  = (int)str_replace('/videos/', '', $videoData['uri']);
-            $videos[] = new VimeoVideo($videoId, $videoData, $this->cache);
+            $video = new VimeoVideo($videoId, $videoData, $this->cache);
+
+            // Include the album data
+            if ($albumData === true) {
+                $video->setAlbum($album);
+            }
+
+            $videos[] = $video;
         }
 
         return $videos;

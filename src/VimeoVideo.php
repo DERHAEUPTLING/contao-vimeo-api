@@ -39,6 +39,12 @@ class VimeoVideo
     protected $data = [];
 
     /**
+     * Album data
+     * @var array
+     */
+    protected $album = [];
+
+    /**
      * Poster
      * @var string
      */
@@ -96,6 +102,16 @@ class VimeoVideo
     public function getId()
     {
         return $this->id;
+    }
+
+    /**
+     * Set the album data
+     *
+     * @param array $album
+     */
+    public function setAlbum(array $album)
+    {
+        $this->album = $album;
     }
 
     /**
@@ -215,6 +231,7 @@ class VimeoVideo
             'size'      => $this->posterSize,
         ]);
 
+        $template->album  = $this->album;
         $template->poster = $posterHelper;
     }
 
