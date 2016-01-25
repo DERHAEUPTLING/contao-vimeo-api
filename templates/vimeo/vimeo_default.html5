@@ -3,6 +3,7 @@ $GLOBALS['TL_CSS'][] = 'system/modules/vimeo_api/assets/style.min.css';
 $GLOBALS['TL_JAVASCRIPT'][] = 'system/modules/vimeo_api/assets/froogaloop.min.js';
 $GLOBALS['TL_JAVASCRIPT'][] = 'system/modules/vimeo_api/assets/script.jquery.min.js';
 ?>
+<?php // dump($this->arrData) ?>
 <div id="vimeo-video-container-<?= $this->id ?>" class="vimeo-video" data-vimeo-video="<?= $this->id ?>"<?php if ($this->lightbox): ?> data-vimeo-lightbox="true" data-vimeo-width="<?= $this->width ?>" data-vimeo-height="<?= $this->height ?>"<?php if ($this->lightboxAutoplay): ?> data-vimeo-lightbox-autoplay="true"<?php endif; ?><?php endif; ?>>
     <a href="#" class="trigger" title="<?= specialchars($this->name) ?>">
         <figure class="image_container">
