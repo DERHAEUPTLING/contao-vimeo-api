@@ -229,8 +229,10 @@ class VimeoVideo
             return '';
         }
 
+        $cacheKey = 'video_' . $this->id;
+
         // Get the image if it's not cached
-        if (!$this->cache->hasVideoImage($this->id)) {
+        if (!$this->cache->hasImage($cacheKey)) {
             $picture = array_pop($this->data['pictures']['sizes']);
             $request = new Request();
             $request->send($picture['link']);
@@ -242,9 +244,9 @@ class VimeoVideo
             }
 
             // Store the video image in the cache
-            $this->cache->setVideoImage($this->id, $request->response);
+            $this->cache->setImage($cacheKey, $request->response);
         }
 
-        return $this->cache->getVideoImage($this->id);
+        return $this->cache->getImage($cacheKey);
     }
 }

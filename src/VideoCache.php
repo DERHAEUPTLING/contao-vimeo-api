@@ -60,15 +60,15 @@ class VideoCache
     }
 
     /**
-     * Return true if there is video data
+     * Return true if there is data
      *
-     * @param string $videoId
+     * @param string $key
      *
      * @return bool
      */
-    public function hasVideoData($videoId)
+    public function hasData($key)
     {
-        $data = $this->getVideoData($videoId);
+        $data = $this->getData($key);
 
         if ($data === null) {
             return false;
@@ -80,48 +80,48 @@ class VideoCache
     /**
      * Get the video data
      *
-     * @param string $videoId
+     * @param string $key
      *
      * @return array|null
      */
-    public function getVideoData($videoId)
+    public function getData($key)
     {
-        return $this->readCacheFile($this->getDataFilePath($videoId));
+        return $this->readDataFile($this->getDataFilePath($key));
     }
 
     /**
      * Set the video data
      *
-     * @param string $videoId
+     * @param string $key
      * @param array  $data
      */
-    public function setVideoData($videoId, array $data)
+    public function setData($key, $data)
     {
-        $this->writeCacheFile($this->getDataFilePath($videoId), $data);
+        $this->writeDataFile($this->getDataFilePath($key), $data);
     }
 
     /**
      * Get the data cache file path
      *
-     * @param string $videoId
+     * @param string $key
      *
      * @return string
      */
-    protected function getDataFilePath($videoId)
+    protected function getDataFilePath($key)
     {
-        return $this->dataFolder . '/video_' . $videoId . '.json';
+        return $this->dataFolder . '/' . $key . '.json';
     }
 
     /**
-     * Return true if there is album data
+     * Return true if there is image
      *
-     * @param string $albumId
+     * @param string $key
      *
      * @return bool
      */
-    public function hasAlbumData($albumId)
+    public function hasImage($key)
     {
-        $data = $this->getAlbumData($albumId);
+        $data = $this->getImage($key);
 
         if ($data === null) {
             return false;
@@ -131,121 +131,15 @@ class VideoCache
     }
 
     /**
-     * Get the album data
+     * Get the image
      *
-     * @param string $albumId
-     *
-     * @return array|null
-     */
-    public function getAlbumData($albumId)
-    {
-        return $this->readCacheFile($this->getAlbumFilePath($albumId));
-    }
-
-    /**
-     * Set the album data
-     *
-     * @param string $albumId
-     * @param array  $data
-     */
-    public function setAlbumData($albumId, array $data)
-    {
-        $this->writeCacheFile($this->getAlbumFilePath($albumId), $data);
-    }
-
-    /**
-     * Get the album cache file path
-     *
-     * @param string $albumId
-     *
-     * @return string
-     */
-    protected function getAlbumFilePath($albumId)
-    {
-        return $this->dataFolder . '/album_' . $albumId . '.json';
-    }
-
-    /**
-     * Return true if there is album videos data
-     *
-     * @param string $albumId
-     *
-     * @return bool
-     */
-    public function hasAlbumVideosData($albumId)
-    {
-        $data = $this->getAlbumVideosData($albumId);
-
-        if ($data === null) {
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
-     * Get the album videos data
-     *
-     * @param string $albumId
-     *
-     * @return array|null
-     */
-    public function getAlbumVideosData($albumId)
-    {
-        return $this->readCacheFile($this->getAlbumVideosFilePath($albumId));
-    }
-
-    /**
-     * Set the album videos data
-     *
-     * @param string $albumId
-     * @param array  $data
-     */
-    public function setAlbumVideosData($albumId, array $data)
-    {
-        $this->writeCacheFile($this->getAlbumVideosFilePath($albumId), $data);
-    }
-
-    /**
-     * Get the album videos cache file path
-     *
-     * @param string $albumId
-     *
-     * @return string
-     */
-    protected function getAlbumVideosFilePath($albumId)
-    {
-        return $this->dataFolder . '/album_videos_' . $albumId . '.json';
-    }
-
-    /**
-     * Return true if there is video image
-     *
-     * @param string $videoId
-     *
-     * @return bool
-     */
-    public function hasVideoImage($videoId)
-    {
-        $data = $this->getVideoImage($videoId);
-
-        if ($data === null) {
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
-     * Get the video image
-     *
-     * @param string $videoId
+     * @param string $key
      *
      * @return string|null
      */
-    public function getVideoImage($videoId)
+    public function getImage($key)
     {
-        $filePath = $this->getImageFilePath($videoId);
+        $filePath = $this->getImageFilePath($key);
 
         if (!is_file(TL_ROOT . '/' . $filePath)) {
             return null;
@@ -257,10 +151,10 @@ class VideoCache
     /**
      * Set the video image
      *
-     * @param string $videoId
+     * @param string $key
      * @param string $content
      */
-    public function setVideoImage($videoId, $content)
+    public function setImage($key, $content)
     {
         $folder = new Folder($this->imagesFolder);
 
@@ -271,7 +165,7 @@ class VideoCache
             $htaccessFile->close();
         }
 
-        $file = new \File($this->getImageFilePath($videoId));
+        $file = new \File($this->getImageFilePath($key));
         $file->truncate();
         $file->write($content);
         $file->close();
@@ -280,22 +174,22 @@ class VideoCache
     /**
      * Get the image cache file path
      *
-     * @param string $videoId
+     * @param string $key
      *
      * @return string
      */
-    protected function getImageFilePath($videoId)
+    protected function getImageFilePath($key)
     {
-        return $this->imagesFolder . '/' . $videoId . '.jpg';
+        return $this->imagesFolder . '/' . $key . '.jpg';
     }
 
     /**
-     * Write the cache file
+     * Write the data file
      *
      * @param string $path
      * @param array  $data
      */
-    protected function writeCacheFile($path, array $data)
+    protected function writeDataFile($path, array $data)
     {
         $file = new \File($path);
         $file->truncate();
@@ -304,13 +198,13 @@ class VideoCache
     }
 
     /**
-     * Read the cache file
+     * Read the data file
      *
      * @param string $path
      *
      * @return array|null
      */
-    protected function readCacheFile($path)
+    protected function readDataFile($path)
     {
         if (!is_file(TL_ROOT . '/' . $path)) {
             return null;

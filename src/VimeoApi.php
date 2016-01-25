@@ -63,8 +63,10 @@ class VimeoApi
      */
     public function getVideo(Vimeo $client, $videoId)
     {
-        if ($this->cache->hasVideoData($videoId) === true) {
-            $videoData = $this->cache->getVideoData($videoId);
+        $cacheKey = 'video_' . $videoId;
+
+        if ($this->cache->hasData($cacheKey) === true) {
+            $videoData = $this->cache->getData($cacheKey);
         } else {
             $data = $client->request('/videos/' . $videoId);
 
@@ -77,7 +79,7 @@ class VimeoApi
             $videoData = $data['body'];
 
             // Cache the video data
-            $this->cache->setVideoData($videoId, $videoData);
+            $this->cache->setData($cacheKey, $videoData);
         }
 
         return new VimeoVideo($videoId, $videoData, $this->cache);
@@ -93,8 +95,10 @@ class VimeoApi
      */
     public function getAlbum(Vimeo $client, $albumId)
     {
-        if ($this->cache->hasAlbumData($albumId) === true) {
-            $albumData = $this->cache->getAlbumData($albumId);
+        $cacheKey = 'album_' . $albumId;
+
+        if ($this->cache->hasData($cacheKey) === true) {
+            $albumData = $this->cache->getData($cacheKey);
         } else {
             $data = $client->request('/albums/' . $albumId);
 
@@ -107,7 +111,7 @@ class VimeoApi
             $albumData = $data['body'];
 
             // Cache the album data
-            $this->cache->setAlbumData($albumId, $albumData);
+            $this->cache->setData($cacheKey, $albumData);
         }
 
         return (array) $albumData;
@@ -123,8 +127,10 @@ class VimeoApi
      */
     public function getAlbumVideos(Vimeo $client, $albumId)
     {
-        if ($this->cache->hasAlbumVideosData($albumId) === true) {
-            $albumVideosData = $this->cache->getAlbumVideosData($albumId);
+        $cacheKey = 'album_videos_' . $albumId;
+
+        if ($this->cache->hasData($cacheKey) === true) {
+            $albumVideosData = $this->cache->getData($cacheKey);
         } else {
             $data = $client->request('/albums/' . $albumId . '/videos');
 
@@ -137,7 +143,7 @@ class VimeoApi
             $albumVideosData = $data['body'];
 
             // Cache the album videos data
-            $this->cache->setAlbumVideosData($albumId, $albumVideosData);
+            $this->cache->setData($cacheKey, $albumVideosData);
         }
 
         if ($albumVideosData === null) {
