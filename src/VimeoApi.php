@@ -127,26 +127,9 @@ class VimeoApi
      */
     public function getAlbumVideos(Vimeo $client, $albumId)
     {
-        $cacheKey = 'album_videos_' . $albumId;
+        $albumVideosData = $this->getAlbumVideosData($client, $albumId);
 
-        if ($this->cache->hasData($cacheKey) === true) {
-            $albumVideosData = $this->cache->getData($cacheKey);
-        } else {
-            $data = $client->request('/albums/' . $albumId . '/videos');
-
-            if ($data['status'] !== 200) {
-                System::log(sprintf('Unable to fetch Vimeo album ID %s with error "%s" (status code: %s)', $albumId, $data['body']['error'], $data['status']), __METHOD__, TL_ERROR);
-
-                return [];
-            }
-
-            $albumVideosData = $data['body'];
-
-            // Cache the album videos data
-            $this->cache->setData($cacheKey, $albumVideosData);
-        }
-
-        if ($albumVideosData === null) {
+        if (count($albumVideosData) === 0) {
             return [];
         }
 
@@ -159,5 +142,52 @@ class VimeoApi
         }
 
         return $videos;
+    }
+
+    /**
+     * Get the album videos data
+     *
+     * @param Vimeo  $client
+     * @param string $albumId
+     *
+     * @return array
+     */
+    protected function getAlbumVideosData(Vimeo $client, $albumId)
+    {
+        $cacheKey = 'album_videos_' . $albumId;
+
+        if ($this->cache->hasData($cacheKey) === true) {
+            $albumVideosData = $this->cache->getData($cacheKey);
+        } else {
+            $albumVideosData = [];
+            $endpoint = '/albums/' . $albumId . '/videos';
+
+            do {
+                $data = $client->request($endpoint);
+
+                if ($data['status'] !== 200) {
+                    System::log(sprintf('Unable to fetch Vimeo album ID %s with error "%s" (status code: %s)', $albumId, $data['body']['error'], $data['status']), __METHOD__, TL_ERROR);
+
+                    return [];
+                }
+
+                // Initialize the data array
+                if (count($albumVideosData) === 0) {
+                    $albumVideosData = $data['body'];
+                } else {
+                    // Add videos to the array
+                    foreach ($data['body']['data'] as $videoData) {
+                        $albumVideosData['data'][] = $videoData;
+                    }
+                }
+
+                $endpoint = $data['body']['paging']['next'];
+            } while ($endpoint);
+
+            // Cache the album videos data
+            $this->cache->setData($cacheKey, $albumVideosData);
+        }
+
+        return $albumVideosData;
     }
 }
