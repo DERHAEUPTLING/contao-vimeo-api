@@ -20,6 +20,7 @@ ClassLoader::addNamespace('Derhaeuptling\VimeoApi');
  * Register the classes
  */
 ClassLoader::addClasses([
+    'Derhaeuptling\VimeoApi\UserDataContainer'           => 'system/modules/vimeo_api/src/UserDataContainer.php',
     'Derhaeuptling\VimeoApi\VimeoApi'                    => 'system/modules/vimeo_api/src/VimeoApi.php',
     'Derhaeuptling\VimeoApi\VideoCache'                  => 'system/modules/vimeo_api/src/VideoCache.php',
     'Derhaeuptling\VimeoApi\VimeoVideo'                  => 'system/modules/vimeo_api/src/VimeoVideo.php',
