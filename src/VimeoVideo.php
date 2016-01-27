@@ -39,10 +39,10 @@ class VimeoVideo
     protected $data = [];
 
     /**
-     * Album data
+     * Albums data
      * @var array
      */
-    protected $album = [];
+    protected $albums = [];
 
     /**
      * Poster
@@ -105,13 +105,13 @@ class VimeoVideo
     }
 
     /**
-     * Set the album data
+     * Set the albums data
      *
-     * @param array $album
+     * @param array $albums
      */
-    public function setAlbum(array $album)
+    public function setAlbums(array $albums)
     {
-        $this->album = $album;
+        $this->albums = $albums;
     }
 
     /**
@@ -231,7 +231,7 @@ class VimeoVideo
             'size'      => $this->posterSize,
         ]);
 
-        $template->album  = $this->album;
+        $template->albums = $this->albums;
         $template->poster = $posterHelper;
     }
 
