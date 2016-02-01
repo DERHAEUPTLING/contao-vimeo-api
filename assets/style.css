@@ -8,6 +8,16 @@
     z-index: 2;
 }
 
+.vimeo-video .image_container figcaption {
+    position: absolute;
+    bottom: 3%;
+    left: 3%;
+}
+
+.vimeo-video .image_container figcaption h3 {
+    margin: 0;
+}
+
 .vimeo-video .image_container img {
     display: block;
 }
