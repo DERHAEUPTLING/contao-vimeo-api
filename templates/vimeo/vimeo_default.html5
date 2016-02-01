@@ -24,24 +24,22 @@ $GLOBALS['TL_JAVASCRIPT'][] = 'system/modules/vimeo_api/assets/script.jquery.min
 
     <div class="embed"></div>
     <script type="application/ld+json">
-	{
-	  "@context" 	: "http://schema.org/",
-	  "@type"		: "VideoObject",
-	  "name"		: "<?= specialchars($this->name)  ?>",
-	  "description"	: "<?= specialchars($this->description)  ?>",
-      "thumbnailUrl": "<?= $this->pictures[sizes][0][link] ?>",
-      "width"		: "<?= $this->width ?>",
-      "height"		: "<?= $this->height ?>",
-      "duration"	: "<?= $this->duration ?>",
-      "uploadDate"	: "<?= $this->created_time  ?>",
-      "director" 	: "director",
-
-	  "@id": "http://videolectures.net/iswc2013_guha_tunnel/",
-	  "datePublished": "2013-11-28",
-	  "author": {
-	    "@type": "Organization",
-	    "name": "<?= $this->user[name]  ?>"
-	  }
-	}
+  	{
+  	  "@context" 	: "http://schema.org/",
+  	  "@type"		: "VideoObject",
+  	  "name"		: "<?= specialchars($this->name)  ?>",
+  	  "description"	: "<?= specialchars($this->description)  ?>",
+        "thumbnailUrl": "<?= $this->pictures[sizes][0][link] ?>",
+        "width"		: "<?= $this->width ?>",
+        "height"		: "<?= $this->height ?>",
+        "duration"	: "<?= $this->duration ?>",
+        "uploadDate"	: "<?= $this->created_time  ?>",
+        "director" 	: "director",
+        "datePublished": "2013-11-28",
+        "author": {
+          "@type": "Organization",
+          "name": "<?= $this->user[name]  ?>"
+        }
+  	}
 	</script>
 </div>
