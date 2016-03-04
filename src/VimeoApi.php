@@ -179,7 +179,13 @@ class VimeoApi
         if ($this->cache->hasData($cacheKey) === true) {
             $albumData = $this->cache->getData($cacheKey);
         } else {
-            $data = $client->request('/albums/' . $albumId);
+            try {
+                $data = $client->request('/albums/'.$albumId);
+            } catch (\Exception $e) {
+                System::log(sprintf('Unable to fetch Vimeo album ID %s with error "%s"', $albumId, $e->getMessage()), __METHOD__, TL_ERROR);
+
+                return [];
+            }
 
             if ($data['status'] !== 200) {
                 System::log(sprintf('Unable to fetch Vimeo album ID %s with error "%s" (status code: %s)', $albumId, $data['body']['error'], $data['status']), __METHOD__, TL_ERROR);
@@ -257,7 +263,13 @@ class VimeoApi
             $endpoint = '/albums/' . $albumId . '/videos';
 
             do {
-                $data = $client->request($endpoint);
+                try {
+                    $data = $client->request($endpoint);
+                } catch (\Exception $e) {
+                    System::log(sprintf('Unable to fetch Vimeo album ID %s with error "%s"', $albumId, $e->getMessage()), __METHOD__, TL_ERROR);
+
+                    return [];
+                }
 
                 if ($data['status'] !== 200) {
                     System::log(sprintf('Unable to fetch Vimeo album ID %s with error "%s" (status code: %s)', $albumId, $data['body']['error'], $data['status']), __METHOD__, TL_ERROR);
