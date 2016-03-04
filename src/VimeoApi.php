@@ -69,7 +69,13 @@ class VimeoApi
         if ($this->cache->hasData($cacheKey) === true) {
             $videoData = $this->cache->getData($cacheKey);
         } else {
-            $data = $client->request('/videos/' . $videoId);
+            try {
+                $data = $client->request('/videos/'.$videoId);
+            } catch (\Exception $e) {
+                System::log(sprintf('Unable to fetch Vimeo video ID %s with error "%s"', $videoId, $e->getMessage()), __METHOD__, TL_ERROR);
+
+                return null;
+            }
 
             if ($data['status'] !== 200) {
                 System::log(sprintf('Unable to fetch Vimeo video ID %s with error "%s" (status code: %s)', $videoId, $data['body']['error'], $data['status']), __METHOD__, TL_ERROR);
@@ -111,7 +117,13 @@ class VimeoApi
             $endpoint = '/me/albums';
 
             do {
-                $data = $client->request($endpoint);
+                try {
+                    $data = $client->request($endpoint);
+                } catch (\Exception $e) {
+                    System::log(sprintf('Unable to fetch Vimeo albums from "/me/albums" with error "%s"', $e->getMessage()), __METHOD__, TL_ERROR);
+
+                    return [];
+                }
 
                 if ($data['status'] !== 200) {
                     System::log(sprintf('Unable to fetch Vimeo albums from "/me/albums" with error "%s" (status code: %s)', $data['body']['error'], $data['status']), __METHOD__, TL_ERROR);
@@ -123,7 +135,13 @@ class VimeoApi
 
                 // Find the video in the album
                 foreach ($data['body']['data'] as $subData) {
-                    $videoData = $client->request($subData['uri'] . '/videos/' . $videoId);
+                    try {
+                        $videoData = $client->request($subData['uri'].'/videos/'.$videoId);
+                    } catch (\Exception $e) {
+                        System::log(sprintf('Unable to fetch Vimeo video ID %s with error "%s"', $videoId, $e->getMessage()), __METHOD__, TL_ERROR);
+
+                        continue;
+                    }
 
                     if ($videoData['status'] === 200) {
                         $albumData = $subData;
