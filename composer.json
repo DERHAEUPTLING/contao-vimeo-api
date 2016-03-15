@@ -1,5 +1,5 @@
 {
-    "name": "derhaeuptling/contao-vimeo_api",
+    "name": "derhaeuptling/Contao-Vimeo-API",
     "description": "Vimeo API extension for Contao Open Source CMS",
     "keywords": ["contao", "vimeo", "video", "player"],
     "type": "contao-module",
