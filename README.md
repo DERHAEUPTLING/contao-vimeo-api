@@ -5,6 +5,8 @@ This extension allows you to embed the Vimeo videos and albums on your website. 
 
 The module supports responsive images feature which is implemented by default in Contao.
 
+![Alt text](../screenshots/screenshot.jpg?raw=true)
+
 ## Requirements
 
 The only requirement is to have jQuery enabled on the page. If you want to also use the lightbox feature, please enable the ```j_colorbox``` template in the page layout settings.
