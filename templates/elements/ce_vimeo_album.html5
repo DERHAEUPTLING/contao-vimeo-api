@@ -1,7 +1,0 @@
-<?php $this->extend('block_unsearchable'); ?>
-
-<?php $this->block('content'); ?>
-
-<?php foreach ($this->videos as $video) echo $video; ?>
-
-<?php $this->endblock(); ?>
