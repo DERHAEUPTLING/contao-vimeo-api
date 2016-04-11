@@ -45,6 +45,12 @@ class VimeoVideo
     protected $album = [];
 
     /**
+     * Custom name
+     * @var string
+     */
+    protected $customName;
+
+    /**
      * Poster
      * @var string
      */
@@ -195,6 +201,26 @@ class VimeoVideo
     }
 
     /**
+     * Get the custom name
+     *
+     * @return string
+     */
+    public function getCustomName()
+    {
+        return $this->customName;
+    }
+
+    /**
+     * Set the custom name
+     *
+     * @param string $customName
+     */
+    public function setCustomName($customName)
+    {
+        $this->customName = $customName;
+    }
+
+    /**
      * Generate the video
      *
      * @param FrontendTemplate $template
@@ -231,8 +257,9 @@ class VimeoVideo
             'size'      => $this->posterSize,
         ]);
 
-        $template->album  = $this->album;
-        $template->poster = $posterHelper;
+        $template->customName = $this->customName;
+        $template->album      = $this->album;
+        $template->poster     = $posterHelper;
     }
 
     /**

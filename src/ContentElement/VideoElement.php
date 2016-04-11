@@ -56,6 +56,7 @@ class VideoElement extends ContentElement
             return;
         }
 
+        $video->setCustomName($this->vimeo_customName);
         $video->setPosterSize(deserialize($this->size, true));
 
         // Enable the lightbox

@@ -17,7 +17,7 @@
 $GLOBALS['TL_DCA']['tl_content']['palettes']['__selector__'][]        = 'vimeo_customPoster';
 $GLOBALS['TL_DCA']['tl_content']['palettes']['__selector__'][]        = 'vimeo_lightbox';
 $GLOBALS['TL_DCA']['tl_content']['palettes']['vimeo_album']           = '{type_legend},type,headline;{source_legend},vimeo_albumId,vimeo_lightbox;{template_legend:hide},customTpl,vimeo_template,size;{protected_legend:hide},protected;{expert_legend:hide},guests,cssID,space;{invisible_legend:hide},invisible,start,stop';
-$GLOBALS['TL_DCA']['tl_content']['palettes']['vimeo_video']           = '{type_legend},type,headline;{source_legend},vimeo_videoId,vimeo_lightbox;{poster_legend:hide},vimeo_customPoster;{template_legend:hide},customTpl,vimeo_template,size;{protected_legend:hide},protected;{expert_legend:hide},guests,cssID,space;{invisible_legend:hide},invisible,start,stop';
+$GLOBALS['TL_DCA']['tl_content']['palettes']['vimeo_video']           = '{type_legend},type,headline;{source_legend},vimeo_videoId,vimeo_customName,vimeo_lightbox;{poster_legend:hide},vimeo_customPoster;{template_legend:hide},customTpl,vimeo_template,size;{protected_legend:hide},protected;{expert_legend:hide},guests,cssID,space;{invisible_legend:hide},invisible,start,stop';
 $GLOBALS['TL_DCA']['tl_content']['subpalettes']['vimeo_customPoster'] = 'singleSRC';
 $GLOBALS['TL_DCA']['tl_content']['subpalettes']['vimeo_lightbox']     = 'vimeo_lightboxAutoplay';
 
@@ -38,6 +38,14 @@ $GLOBALS['TL_DCA']['tl_content']['fields']['vimeo_videoId'] = [
     'inputType'               => 'text',
     'eval'                    => array('mandatory'=>true, 'maxlength'=>32, 'tl_class'=>'w50'),
     'sql'                     => "varchar(32) NOT NULL default ''"
+];
+
+$GLOBALS['TL_DCA']['tl_content']['fields']['vimeo_customName'] = [
+    'label'                   => &$GLOBALS['TL_LANG']['tl_content']['vimeo_customName'],
+    'exclude'                 => true,
+    'inputType'               => 'text',
+    'eval'                    => array('maxlength'=>255, 'tl_class'=>'w50'),
+    'sql'                     => "varchar(255) NOT NULL default ''"
 ];
 
 $GLOBALS['TL_DCA']['tl_content']['fields']['vimeo_lightbox'] = [
