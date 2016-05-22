@@ -81,6 +81,24 @@ class VimeoVideo
     protected $lightboxAutoplay = false;
 
     /**
+     * Link
+     * @var bool
+     */
+    protected $link = false;
+
+    /**
+     * Link URL
+     * @var string
+     */
+    protected $linkUrl;
+
+    /**
+     * Link title
+     * @var string
+     */
+    protected $linkTitle;
+
+    /**
      * Images folder
      * @var string
      */
@@ -201,6 +219,62 @@ class VimeoVideo
     }
 
     /**
+     * Enable the link
+     */
+    public function enableLink()
+    {
+        $this->link = true;
+    }
+
+    /**
+     * Disable the link
+     */
+    public function disableLink()
+    {
+        $this->link = false;
+    }
+
+    /**
+     * Get the link title
+     *
+     * @return string
+     */
+    public function getLinkTitle()
+    {
+        return $this->linkTitle;
+    }
+
+    /**
+     * Set the link title
+     *
+     * @param string $linkTitle
+     */
+    public function setLinkTitle($linkTitle)
+    {
+        $this->linkTitle = $linkTitle;
+    }
+
+    /**
+     * Get the link URL
+     *
+     * @return string
+     */
+    public function getLinkUrl()
+    {
+        return $this->linkUrl;
+    }
+
+    /**
+     * Set the link URL
+     *
+     * @param string $linkUrl
+     */
+    public function setLinkUrl($linkUrl)
+    {
+        $this->linkUrl = $linkUrl;
+    }
+
+    /**
      * Get the custom name
      *
      * @return string
@@ -249,6 +323,13 @@ class VimeoVideo
             $template->lightbox         = true;
             $template->lightboxAutoplay = $this->lightboxAutoplay ? true : false;
             $template->lightboxSize     = $this->lightboxSize;
+        }
+
+        // Add link features
+        if ($this->link) {
+            $template->internalLink = true;
+            $template->linkUrl      = $this->linkUrl;
+            $template->linkTitle    = $this->linkTitle;
         }
 
         $posterHelper = new \stdClass();

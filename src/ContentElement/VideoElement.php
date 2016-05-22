@@ -69,6 +69,13 @@ class VideoElement extends ContentElement
             }
         }
 
+        // Enable the link
+        if ($this->vimeo_link) {
+            $video->enableLink();
+            $video->setLinkUrl($this->url);
+            $video->setLinkTitle($this->titleText);
+        }
+
         // Set a custom poster
         if ($this->vimeo_customPoster) {
             $fileModel = \FilesModel::findByPk($this->singleSRC);
