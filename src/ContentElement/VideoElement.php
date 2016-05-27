@@ -37,8 +37,16 @@ class VideoElement extends ContentElement
             return '';
         }
 
+        // Generate the backend buffer
         if (TL_MODE == 'BE') {
-            return '<p><a href="https://vimeo.com/' . $this->vimeo_videoId . '" target="_blank">https://vimeo.com/' . $this->vimeo_videoId . '</a></p>';
+            $buffer = '<p><a href="https://vimeo.com/' . $this->vimeo_videoId . '" target="_blank">https://vimeo.com/' . $this->vimeo_videoId . '</a></p>';
+
+            // Display the video image
+            if (($video = $this->getVideo()) !== null) {
+                $buffer .= '<figure><img src="'.$video->getPoster().'" width="160" height="" alt=""></figure>';
+            }
+
+            return $buffer;
         }
 
         return parent::generate();
@@ -49,10 +57,7 @@ class VideoElement extends ContentElement
      */
     protected function compile()
     {
-        $api   = new VimeoApi(new VideoCache());
-        $video = $api->getVideo($api->getClient(), $this->vimeo_videoId);
-
-        if ($video === null) {
+        if (($video = $this->getVideo()) === null) {
             return;
         }
 
@@ -86,5 +91,17 @@ class VideoElement extends ContentElement
         }
 
         $this->Template->buffer = $video->generate(new FrontendTemplate($this->vimeo_template));
+    }
+
+    /**
+     * Get the video
+     *
+     * @return \Derhaeuptling\VimeoApi\VimeoVideo|null
+     */
+    protected function getVideo()
+    {
+        $api = new VimeoApi(new VideoCache());
+
+        return $api->getVideo($api->getClient(), $this->vimeo_videoId);
     }
 }
