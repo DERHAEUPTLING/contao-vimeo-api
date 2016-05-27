@@ -12,6 +12,11 @@
  */
 
 /**
+ * Miscellaneous
+ */
+$GLOBALS['TL_LANG']['MSC']['vimeo.video_link'] = 'Video link: %s';
+
+/**
  * Content elements
  */
 $GLOBALS['TL_LANG']['CTE']['vimeo_album'] = ['Vimeo album', 'Adds a Vimeo album to the page.'];

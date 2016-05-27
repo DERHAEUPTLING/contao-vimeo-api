@@ -39,7 +39,14 @@ class VideoElement extends ContentElement
 
         // Generate the backend buffer
         if (TL_MODE == 'BE') {
-            $buffer = '<p><a href="https://vimeo.com/' . $this->vimeo_videoId . '" target="_blank">https://vimeo.com/' . $this->vimeo_videoId . '</a></p>';
+            $buffer = '<p><a href="https://vimeo.com/' . $this->vimeo_videoId . '" target="_blank">https://vimeo.com/' . $this->vimeo_videoId . '</a>';
+
+            // Display the hint that the video is linked to URL
+            if ($this->vimeo_link) {
+                $buffer .= ' - '.sprintf($GLOBALS['TL_LANG']['MSC']['vimeo.video_link'], $this->url);
+            }
+
+            $buffer .= '</p>';
 
             // Display the video image
             if (($video = $this->getVideo()) !== null) {
