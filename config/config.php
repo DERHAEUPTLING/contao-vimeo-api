@@ -18,8 +18,15 @@ $GLOBALS['TL_CTE']['media']['vimeo_album'] = 'Derhaeuptling\VimeoApi\ContentElem
 $GLOBALS['TL_CTE']['media']['vimeo_video'] = 'Derhaeuptling\VimeoApi\ContentElement\VideoElement';
 
 /**
+ * Hooks
+ */
+$GLOBALS['TL_HOOKS']['executePreActions'][] = ['Derhaeuptling\VimeoApi\Maintenance\CacheRebuilder', 'rebuildCache'];
+
+/**
  * Add the Vimeo purge job
  */
+$GLOBALS['TL_MAINTENANCE'][] = 'Derhaeuptling\VimeoApi\Maintenance\CacheRebuilder';
+
 $GLOBALS['TL_PURGE']['folders']['vimeo'] = [
     'callback' => ['Derhaeuptling\VimeoApi\VideoCache', 'purge'],
     'affected' => [\Derhaeuptling\VimeoApi\VideoCache::getRootFolder()],

@@ -1,0 +1,52 @@
+#tl_maintenance_vimeo .tl_message {
+    margin-bottom: 28px;
+}
+
+#tl_maintenance_vimeo .tl_submit_container {
+    margin-top: 0;
+}
+
+#tl_maintenance_vimeo .tl_formbody_edit .tl_info {
+    margin-bottom: 14px;
+    padding-left: 18px;
+    background-position: left center;
+    background-color: transparent;
+}
+
+#tl_vimeo_rebuild {
+    padding: 0 18px 18px;
+    line-height: 1.5;
+}
+
+#tl_vimeo_rebuild .col_status {
+    width: 100px;
+}
+
+#tl_vimeo_rebuild .col_status .error,
+#tl_vimeo_rebuild .col_status .success {
+    display: none;
+}
+
+#tl_vimeo_rebuild tr.row_success td {
+    color: #77ac45;
+}
+
+#tl_vimeo_rebuild tr.row_success .col_status .loading {
+    display: none;
+}
+
+#tl_vimeo_rebuild tr.row_success .col_status .success {
+    display: block;
+}
+
+#tl_vimeo_rebuild tr.row_error td {
+    color: #c33;
+}
+
+#tl_vimeo_rebuild tr.row_error .col_status .loading {
+    display: none;
+}
+
+#tl_vimeo_rebuild tr.row_error .col_status .error {
+    display: block;
+}

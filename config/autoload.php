@@ -26,21 +26,26 @@ ClassLoader::addClasses([
     'Derhaeuptling\VimeoApi\VimeoVideo'                  => 'system/modules/vimeo_api/src/VimeoVideo.php',
     'Derhaeuptling\VimeoApi\ContentElement\AlbumElement' => 'system/modules/vimeo_api/src/ContentElement/AlbumElement.php',
     'Derhaeuptling\VimeoApi\ContentElement\VideoElement' => 'system/modules/vimeo_api/src/ContentElement/VideoElement.php',
+    'Derhaeuptling\VimeoApi\Maintenance\CacheRebuilder'  => 'system/modules/vimeo_api/src/Maintenance/CacheRebuilder.php',
+    'Derhaeuptling\VimeoApi\Maintenance\ClearCache'      => 'system/modules/vimeo_api/src/Maintenance/ClearCache.php',
 ]);
 
 /**
  * Register the templates
  */
 TemplateLoader::addFiles([
+    // Backend
+    'be_vimeo_rebuilder' => 'system/modules/vimeo_api/templates/backend',
+
     // Content elements
-    'ce_vimeo_album' => 'system/modules/vimeo_api/templates/elements',
-    'ce_vimeo_video' => 'system/modules/vimeo_api/templates/elements',
+    'ce_vimeo_album'     => 'system/modules/vimeo_api/templates/elements',
+    'ce_vimeo_video'     => 'system/modules/vimeo_api/templates/elements',
 
     // Vimeo
-    'vimeo_default'  => 'system/modules/vimeo_api/templates/vimeo',
+    'vimeo_default'      => 'system/modules/vimeo_api/templates/vimeo',
 ]);
 
 /**
  * Register the Vimeo autoloader
  */
-require_once TL_ROOT . '/system/modules/vimeo_api/vendor/vimeo/autoload.php';
+require_once TL_ROOT.'/system/modules/vimeo_api/vendor/vimeo/autoload.php';

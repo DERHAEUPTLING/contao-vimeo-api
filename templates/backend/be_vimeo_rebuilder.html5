@@ -1,0 +1,86 @@
+
+<div id="tl_maintenance_vimeo" class="maintenance_<?= $this->isActive ? 'active' : 'inactive' ?>">
+
+    <h2 class="sub_headline"><?= $GLOBALS['TL_LANG']['tl_maintenance']['vimeo.headline'] ?></h2>
+
+    <?php if (!$this->elementsCount): ?>
+        <div class="tl_message">
+            <p class="tl_info"><?= $GLOBALS['TL_LANG']['tl_maintenance']['vimeo.empty'] ?></p>
+        </div>
+    <?php else: ?>
+        <?php if ($this->isActive): ?>
+            <div id="tl_vimeo_rebuild">
+                <p id="index_loading"><?= $GLOBALS['TL_LANG']['tl_maintenance']['vimeo.loading'] ?></p>
+                <p id="index_complete" style="display:none"><?= $GLOBALS['TL_LANG']['tl_maintenance']['vimeo.complete'] ?></p>
+
+                <table class="tl_listing">
+                    <thead>
+                    <tr>
+                        <th class="tl_folder_tlist col_status"><?= $GLOBALS['TL_LANG']['tl_maintenance']['vimeo.tableStatus'] ?></th>
+                        <th class="tl_folder_tlist col_type"><?= $GLOBALS['TL_LANG']['tl_maintenance']['vimeo.tableType'] ?></th>
+                        <th class="tl_folder_tlist col_id"><?= $GLOBALS['TL_LANG']['tl_maintenance']['vimeo.tableId'] ?></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($this->elements as $element): ?>
+                            <tr data-id="<?= $element['id'] ?>">
+                                <td class="tl_file_list col_status">
+                                    <span class="loading"><?= $GLOBALS['TL_LANG']['tl_maintenance']['vimeo.recordLoading'] ?></span>
+                                    <span class="success"><?= $GLOBALS['TL_LANG']['tl_maintenance']['vimeo.recordSuccess'] ?></span>
+                                    <span class="error"><?= $GLOBALS['TL_LANG']['tl_maintenance']['vimeo.recordError'] ?></span>
+                                </td>
+                                <td class="tl_file_list col_type"><?= $element['type'] ?></td>
+                                <td class="tl_file_list col_id"><?= $element['id'] ?></td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+
+            <script>
+                window.addEvent('domready', function() {
+                    var items = $('tl_vimeo_rebuild').getElements('[data-id]'),
+                        completed = 0;
+
+                    items.each(function(el) {
+                        new Request.Contao({
+                            onFailure: function () {
+                                el.addClass('row_error');
+                            },
+                            onSuccess: function() {
+                                el.addClass('row_success');
+                            },
+                            onComplete: function () {
+                                if (++completed >= items.length) {
+                                    $('index_loading').setStyle('display', 'none');
+                                    $('index_complete').setStyle('display', 'block');
+                                }
+                            }
+                        }).post({'action': '<?= $this->ajaxAction ?>', 'id': el.getAttribute('data-id'), 'REQUEST_TOKEN': Contao.request_token});
+                    });
+                });
+            </script>
+
+            <form action="<?= $this->action ?>" class="tl_form" method="get">
+                <div class="tl_submit_container">
+                    <input type="hidden" name="do" value="maintenance">
+                    <input type="submit" id="index" class="tl_submit" value="<?= specialchars($GLOBALS['TL_LANG']['MSC']['continue']) ?>">
+                </div>
+            </form>
+        <?php else: ?>
+            <form action="<?= $this->action ?>" class="tl_form" method="get">
+                <div class="tl_formbody_edit">
+                    <input type="hidden" name="act" value="vimeo">
+                    <input type="hidden" name="do" value="maintenance">
+                    <input type="hidden" name="rt" value="<?= REQUEST_TOKEN ?>">
+
+                    <p class="tl_info"><?= $GLOBALS['TL_LANG']['tl_maintenance']['vimeo.records'] ?>&nbsp;<strong><?= $this->elementsCount ?></strong></p>
+                </div>
+                <div class="tl_submit_container">
+                    <input type="submit" id="index" class="tl_submit" value="<?= specialchars($GLOBALS['TL_LANG']['tl_maintenance']['vimeo.submit']) ?>">
+                </div>
+            </form>
+        <?php endif; ?>
+    <?php endif; ?>
+
+</div>
