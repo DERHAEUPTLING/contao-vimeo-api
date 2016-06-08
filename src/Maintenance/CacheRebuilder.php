@@ -30,13 +30,30 @@ class CacheRebuilder implements \executable
     protected $ajaxAction = 'vimeo_api_rebuild_cache';
 
     /**
+     * Popup mode
+     *
+     * @var bool
+     */
+    protected $popup = false;
+
+    /**
+     * Set the popup mode
+     *
+     * @param boolean $popup
+     */
+    public function setPopupMode($popup)
+    {
+        $this->popup = (bool)$popup;
+    }
+
+    /**
      * Return true if the module is active
      *
      * @return bool
      */
     public function isActive()
     {
-        return Input::get('act') === 'vimeo';
+        return (Input::get('act') === 'vimeo') || $this->popup;
     }
 
     /**

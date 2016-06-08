@@ -50,3 +50,21 @@
 #tl_vimeo_rebuild tr.row_error .col_status .error {
     display: block;
 }
+
+body.popup .sub_headline {
+    margin-left: 0;
+    margin-right: 0;
+}
+
+body.popup .tl_form {
+    display: none;
+}
+
+body.popup #tl_vimeo_rebuild {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+body.popup #tl_vimeo_rebuild .tl_listing {
+    width: 100%;
+}

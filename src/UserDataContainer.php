@@ -13,6 +13,8 @@
 
 namespace Derhaeuptling\VimeoApi;
 
+use Contao\Environment;
+
 class UserDataContainer
 {
     /**
@@ -65,6 +67,20 @@ class UserDataContainer
     <input type="checkbox" name="purge[]" id="opt_purge_2" class="tl_checkbox" value="purge_pages" onfocus="Backend.getScrollOffset()"> <label for="opt_purge_2">' . $GLOBALS['TL_LANG']['tl_user']['tempLabel'] . '</label><br>
     <input type="checkbox" name="purge[]" id="opt_purge_3" class="tl_checkbox" value="purge_vimeo" onfocus="Backend.getScrollOffset()"> <label for="opt_purge_3">' . $GLOBALS['TL_LANG']['tl_user']['vimeoLabel'] . '</label>
   </fieldset>' . $dc->help() . '
+</div>';
+    }
+
+    /**
+     * Generate the purge cache field
+     *
+     * @return string
+     */
+    public function generatePurgeField()
+    {
+        return '<div class="w50">
+  <h3><label for="ctrl_name">'.$GLOBALS['TL_LANG']['tl_user']['vimeoRebuildLabel'][0].'</label></h3>
+  <a href="system/modules/vimeo_api/public/rebuild.php" class="tl_submit" style="margin:5px 0;" onclick="Backend.openModalIframe({\'width\':768,\'title\':\''.specialchars($GLOBALS['TL_LANG']['tl_user']['vimeoRebuildLabel'][0]).'\',\'url\':this.href});return false">'.specialchars($GLOBALS['TL_LANG']['tl_user']['vimeoRebuildButton']).'</a>
+  <p class="tl_help tl_tip">'.$GLOBALS['TL_LANG']['tl_user']['vimeoRebuildLabel'][1].'</p>
 </div>';
     }
 }

@@ -12,6 +12,27 @@
  */
 
 /**
+ * Extend the palettes
+ */
+if (\Contao\Input::get('do') === 'login') {
+    $GLOBALS['TL_DCA']['tl_user']['palettes']['login'] = str_replace(
+        'session;',
+        'session,vimeo_purge;',
+        $GLOBALS['TL_DCA']['tl_user']['palettes']['login']
+    );
+}
+
+/**
  * Replace the "session" field callback
  */
-$GLOBALS['TL_DCA']['tl_user']['fields']['session']['input_field_callback'] = ['Derhaeuptling\VimeoApi\UserDataContainer', 'generateSessionField'];
+$GLOBALS['TL_DCA']['tl_user']['fields']['session']['input_field_callback'] = [
+    'Derhaeuptling\VimeoApi\UserDataContainer',
+    'generateSessionField',
+];
+
+/**
+ * Add the fields
+ */
+$GLOBALS['TL_DCA']['tl_user']['fields']['vimeo_purge'] = [
+    'input_field_callback' => ['Derhaeuptling\VimeoApi\UserDataContainer', 'generatePurgeField'],
+];
