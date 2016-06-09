@@ -18,6 +18,7 @@
                     <tr>
                         <th class="tl_folder_tlist col_status"><?= $GLOBALS['TL_LANG']['tl_maintenance']['vimeo.tableStatus'] ?></th>
                         <th class="tl_folder_tlist col_type"><?= $GLOBALS['TL_LANG']['tl_maintenance']['vimeo.tableType'] ?></th>
+                        <th class="tl_folder_tlist col_ref"><?= $GLOBALS['TL_LANG']['tl_maintenance']['vimeo.tableRef'] ?></th>
                         <th class="tl_folder_tlist col_id"><?= $GLOBALS['TL_LANG']['tl_maintenance']['vimeo.tableId'] ?></th>
                     </tr>
                     </thead>
@@ -30,6 +31,7 @@
                                     <span class="error"><?= $GLOBALS['TL_LANG']['tl_maintenance']['vimeo.recordError'] ?></span>
                                 </td>
                                 <td class="tl_file_list col_type"><?= $element['type'] ?></td>
+                                <td class="tl_file_list col_ref"><?= $element['ref'] ?></td>
                                 <td class="tl_file_list col_id"><?= $element['id'] ?></td>
                             </tr>
                         <?php endforeach; ?>

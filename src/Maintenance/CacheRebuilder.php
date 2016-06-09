@@ -76,10 +76,11 @@ class CacheRebuilder implements \executable
         if ($this->isActive()) {
             $elements = [];
 
-            foreach ($elementsData as $id => $type) {
+            foreach ($elementsData as $data) {
                 $elements[] = [
-                    'type' => $GLOBALS['TL_LANG']['CTE'][$type][0],
-                    'id'   => $id,
+                    'type' => $GLOBALS['TL_LANG']['CTE'][$data['type']][0],
+                    'ref'  => ($data['type'] === 'vimeo_album') ? $data['vimeo_albumId'] : $data['vimeo_videoId'],
+                    'id'   => $data['id'],
                 ];
             }
 
@@ -97,14 +98,8 @@ class CacheRebuilder implements \executable
      */
     protected function getContentElements()
     {
-        $return   = [];
-        $elements = Database::getInstance()->execute("SELECT id, type FROM tl_content WHERE type='vimeo_album' OR type='vimeo_video'");
-
-        while ($elements->next()) {
-            $return[$elements->id] = $elements->type;
-        }
-
-        return $return;
+        return Database::getInstance()->execute("SELECT id, type, vimeo_albumId, vimeo_videoId FROM tl_content WHERE type='vimeo_album' OR type='vimeo_video'")
+            ->fetchAllAssoc();
     }
 
     /**
@@ -130,12 +125,19 @@ class CacheRebuilder implements \executable
 
         switch ($contentElement->type) {
             case 'vimeo_album':
-                $api->getAlbum($client, $contentElement->vimeo_albumId);
-                $api->getAlbumVideos($client, $contentElement->vimeo_albumId);
+                if ($api->getAlbum($client, $contentElement->vimeo_albumId) === null ||
+                    count($api->getAlbumVideos($client, $contentElement->vimeo_albumId)) < 1
+                ) {
+                    header('HTTP/1.1 400 Bad Request');
+                    die('Bad Request');
+                }
                 break;
 
             case 'vimeo_video':
-                $api->getVideo($client, $contentElement->vimeo_videoId);
+                if ($api->getVideo($client, $contentElement->vimeo_videoId) === null) {
+                    header('HTTP/1.1 400 Bad Request');
+                    die('Bad Request');
+                }
                 break;
         }
 
