@@ -23,10 +23,19 @@ $GLOBALS['TL_LANG']['tl_maintenance']['vimeo.complete']      = 'The Vimeo cache 
 $GLOBALS['TL_LANG']['tl_maintenance']['vimeo.tableStatus']   = 'Status';
 $GLOBALS['TL_LANG']['tl_maintenance']['vimeo.tableType']     = 'Type';
 $GLOBALS['TL_LANG']['tl_maintenance']['vimeo.tableRef']      = 'Reference ID';
-$GLOBALS['TL_LANG']['tl_maintenance']['vimeo.tableId']       = 'Element ID';
+$GLOBALS['TL_LANG']['tl_maintenance']['vimeo.tableSource']   = 'Source';
 $GLOBALS['TL_LANG']['tl_maintenance']['vimeo.recordLoading'] = 'Loading...';
 $GLOBALS['TL_LANG']['tl_maintenance']['vimeo.recordSuccess'] = 'Success';
 $GLOBALS['TL_LANG']['tl_maintenance']['vimeo.recordError']   = 'Error';
+
+/**
+ * Reference
+ */
+$GLOBALS['TL_LANG']['tl_maintenance']['vimeo.tableSourceRef'] = [
+    'article' => 'Article',
+    'news'    => 'News',
+    'event'   => 'Event',
+];
 
 /**
  * Maintenance jobs

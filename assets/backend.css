@@ -27,6 +27,18 @@
     display: none;
 }
 
+#tl_vimeo_rebuild tr td:nth-child(1) {
+    min-width: 100px;
+}
+
+#tl_vimeo_rebuild tr td:nth-child(2) {
+    min-width: 125px;
+}
+
+#tl_vimeo_rebuild tr td:nth-child(3) {
+    min-width: 125px;
+}
+
 #tl_vimeo_rebuild tr.row_success td {
     color: #77ac45;
 }

@@ -77,10 +77,33 @@ class CacheRebuilder implements \executable
             $elements = [];
 
             foreach ($elementsData as $data) {
+                switch ($data['ptable']) {
+                    case 'tl_article':
+                        $source = $GLOBALS['TL_LANG']['tl_maintenance']['vimeo.tableSourceRef']['article'];
+                        $path   = [$data['page'], $data['article']];
+                        break;
+
+                    case 'tl_news':
+                        $source = $GLOBALS['TL_LANG']['tl_maintenance']['vimeo.tableSourceRef']['news'];
+                        $path   = [$data['archive'], $data['news']];
+                        break;
+
+                    case 'tl_calendar_events':
+                        $source = $GLOBALS['TL_LANG']['tl_maintenance']['vimeo.tableSourceRef']['event'];
+                        $path   = [$data['calendar'], $data['event']];
+                        break;
+
+                    default:
+                        $source = '';
+                        $path   = [];
+                }
+
                 $elements[] = [
-                    'type' => $GLOBALS['TL_LANG']['CTE'][$data['type']][0],
-                    'ref'  => ($data['type'] === 'vimeo_album') ? $data['vimeo_albumId'] : $data['vimeo_videoId'],
-                    'id'   => $data['id'],
+                    'type'   => $GLOBALS['TL_LANG']['CTE'][$data['type']][0],
+                    'ref'    => ($data['type'] === 'vimeo_album') ? $data['vimeo_albumId'] : $data['vimeo_videoId'],
+                    'id'     => $data['id'],
+                    'source' => $source,
+                    'path'   => $path,
                 ];
             }
 
@@ -98,7 +121,23 @@ class CacheRebuilder implements \executable
      */
     protected function getContentElements()
     {
-        return Database::getInstance()->execute("SELECT id, type, vimeo_albumId, vimeo_videoId FROM tl_content WHERE type='vimeo_album' OR type='vimeo_video'")
+        return Database::getInstance()->execute("
+SELECT
+tl_content.id, tl_content.type, tl_content.vimeo_albumId, tl_content.vimeo_videoId, tl_content.ptable,
+tl_article.title AS article,
+tl_page.title AS page,
+tl_news.headline AS news,
+tl_news_archive.title AS archive,
+tl_calendar_events.title AS event,
+tl_calendar.title AS calendar
+FROM tl_content
+LEFT JOIN tl_article ON tl_article.id=tl_content.pid AND tl_content.ptable='tl_article'
+LEFT JOIN tl_page ON tl_page.id=tl_article.pid
+LEFT JOIN tl_news ON tl_news.id=tl_content.pid AND tl_content.ptable='tl_news'
+LEFT JOIN tl_news_archive ON tl_news_archive.id=tl_news.pid
+LEFT JOIN tl_calendar_events ON tl_calendar_events.id=tl_content.pid AND tl_content.ptable='tl_calendar_events'
+LEFT JOIN tl_calendar ON tl_calendar.id=tl_calendar_events.pid
+WHERE tl_content.type='vimeo_album' OR tl_content.type='vimeo_video'")
             ->fetchAllAssoc();
     }
 
