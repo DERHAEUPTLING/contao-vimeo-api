@@ -30,8 +30,14 @@
                                     <span class="success"><?= $GLOBALS['TL_LANG']['tl_maintenance']['vimeo.recordSuccess'] ?></span>
                                     <span class="error"><?= $GLOBALS['TL_LANG']['tl_maintenance']['vimeo.recordError'] ?></span>
                                 </td>
-                                <td class="tl_file_list col_type"><?= $element['type'] ?></td>
-                                <td class="tl_file_list col_ref"><?= $element['ref'] ?></td>
+                                <td class="tl_file_list col_type"><?= $GLOBALS['TL_LANG']['CTE'][$element['type']][0] ?></td>
+                                <td class="tl_file_list col_ref">
+                                    <?php if ($element['type'] === 'vimeo_album'): ?>
+                                        <a href="https://vimeo.com/album/<?= $element['ref'] ?>" target="_blank"><?= $element['ref'] ?></a>
+                                    <?php else: ?>
+                                        <a href="https://vimeo.com/<?= $element['ref'] ?>" target="_blank"><?= $element['ref'] ?></a>
+                                    <?php endif; ?>
+                                </td>
                                 <td class="tl_file_list col_source">
                                     <?php if ($element['source']): ?>
                                         <?= $element['source'] ?>: <?= implode(' &gt; ' , $element['path']) ?>

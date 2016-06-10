@@ -99,7 +99,7 @@ class CacheRebuilder implements \executable
                 }
 
                 $elements[] = [
-                    'type'   => $GLOBALS['TL_LANG']['CTE'][$data['type']][0],
+                    'type'   => $data['type'],
                     'ref'    => ($data['type'] === 'vimeo_album') ? $data['vimeo_albumId'] : $data['vimeo_videoId'],
                     'id'     => $data['id'],
                     'source' => $source,
