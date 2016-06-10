@@ -70,6 +70,10 @@
                             }
                         }).post({'action': '<?= $this->ajaxAction ?>', 'id': el.getAttribute('data-id'), 'REQUEST_TOKEN': Contao.request_token});
                     });
+
+                    if ($(document.body).hasClass('popup')) {
+                        $('tl_select').removeClass('unselectable');
+                    }
                 });
             </script>
 
