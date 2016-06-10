@@ -25,6 +25,12 @@ Afterwards you can start creating the "Vimeo video" content elements. If somethi
 
 By default the extension caches video data and images fetched from Vimeo API to improve the overall performance. In case you need to clear the cache, go to the Maintenance module and purge the Vimeo cache.
 
+## Rebuilding Vimeo cache
+
+In case you would like to rebuild the images and data cache, you can go to the Maintenance module and rebuild it there. The script will perform an AJAX request for every Vimeo content element - it works similar to the rebuilding Contao search index.
+ 
+Contrary to the clearing/purging the Vimeo cache it will not delete the cache but override it. This means the frontend will still be accessible in timely fashion but it can still display the old cache if the particular elements have not been processed yet.
+
 ## Displaying private videos
 
 To display the Vimeo private videos, make sure that your access token has ```private``` scope enabled. You may also need to refine the settings of the video itself, allowing it to be displayed on desired websites.
