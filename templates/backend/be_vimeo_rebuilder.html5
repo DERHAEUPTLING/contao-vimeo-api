@@ -64,11 +64,15 @@
                             },
                             onComplete: function () {
                                 if (++completed >= items.length) {
-                                    $('index_loading').setStyle('display', 'none');
-                                    $('index_complete').setStyle('display', 'block');
+                                    new Request.Contao({
+                                        onComplete: function () {
+                                            $('index_loading').setStyle('display', 'none');
+                                            $('index_complete').setStyle('display', 'block');
+                                        }
+                                    }).post({'action': '<?= $this->ajaxAction ?>', 'cache': 'page', 'REQUEST_TOKEN': Contao.request_token});
                                 }
                             }
-                        }).post({'action': '<?= $this->ajaxAction ?>', 'id': el.getAttribute('data-id'), 'REQUEST_TOKEN': Contao.request_token});
+                        }).post({'action': '<?= $this->ajaxAction ?>', 'cache': 'vimeo', 'id': el.getAttribute('data-id'), 'REQUEST_TOKEN': Contao.request_token});
                     });
 
                     if ($(document.body).hasClass('popup')) {

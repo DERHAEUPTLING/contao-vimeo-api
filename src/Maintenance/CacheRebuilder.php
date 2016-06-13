@@ -13,6 +13,7 @@
 
 namespace Derhaeuptling\VimeoApi\Maintenance;
 
+use Contao\Automator;
 use Contao\BackendTemplate;
 use Contao\ContentModel;
 use Contao\Database;
@@ -152,6 +153,31 @@ WHERE tl_content.type='vimeo_album' OR tl_content.type='vimeo_video'")
             return;
         }
 
+        switch (Input::post('cache')) {
+            case 'page':
+                $this->rebuildPageCache();
+                break;
+
+            case 'vimeo':
+                $this->rebuildVimeoCache();
+                break;
+        }
+    }
+
+    /**
+     * Rebuild the page cache
+     */
+    protected function rebuildPageCache()
+    {
+        $automator = new Automator();
+        $automator->purgePageCache();
+    }
+
+    /**
+     * Rebuild the Vimeo cache
+     */
+    protected function rebuildVimeoCache()
+    {
         // Throw an error if content element could not be found
         if (($contentElement = ContentModel::findByPk(Input::post('id'))) === null) {
             System::log(sprintf('Unable to find the content element ID %s', Input::post('id')), __METHOD__, TL_ERROR);
