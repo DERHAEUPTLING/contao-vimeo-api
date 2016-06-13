@@ -14,8 +14,6 @@
 /**
  * Reference
  */
-$GLOBALS['TL_LANG']['tl_user']['vimeoLabel']         = 'Vimeo cache';
-$GLOBALS['TL_LANG']['tl_user']['vimeoPurged']        = 'The Vimeo cache has been purged';
 $GLOBALS['TL_LANG']['tl_user']['vimeoRebuildButton'] = 'Rebuild the cache';
 $GLOBALS['TL_LANG']['tl_user']['vimeoRebuildLabel']  = [
     'Rebuild the Vimeo cache',

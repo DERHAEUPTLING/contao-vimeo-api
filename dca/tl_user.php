@@ -23,14 +23,6 @@ if (\Contao\Input::get('do') === 'login') {
 }
 
 /**
- * Replace the "session" field callback
- */
-$GLOBALS['TL_DCA']['tl_user']['fields']['session']['input_field_callback'] = [
-    'Derhaeuptling\VimeoApi\UserDataContainer',
-    'generateSessionField',
-];
-
-/**
  * Add the fields
  */
 $GLOBALS['TL_DCA']['tl_user']['fields']['vimeo_purge'] = [
