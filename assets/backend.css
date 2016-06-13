@@ -39,7 +39,12 @@
     min-width: 125px;
 }
 
-#tl_vimeo_rebuild tr.row_success td {
+#tl_vimeo_rebuild tr td a {
+    text-decoration: underline;
+}
+
+#tl_vimeo_rebuild tr.row_success td,
+#tl_vimeo_rebuild tr.row_success td a {
     color: #77ac45;
 }
 
@@ -51,7 +56,8 @@
     display: block;
 }
 
-#tl_vimeo_rebuild tr.row_error td {
+#tl_vimeo_rebuild tr.row_error td,
+#tl_vimeo_rebuild tr.row_error td a {
     color: #c33;
 }
 
