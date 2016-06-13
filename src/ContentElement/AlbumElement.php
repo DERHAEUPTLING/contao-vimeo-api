@@ -13,6 +13,7 @@
 
 namespace Derhaeuptling\VimeoApi\ContentElement;
 
+use Contao\Config;
 use Contao\ContentElement;
 use Contao\FrontendTemplate;
 use Derhaeuptling\VimeoApi\VimeoApi;
@@ -63,6 +64,11 @@ class AlbumElement extends ContentElement
         // Generate the videos
         /** @var VimeoVideo $video */
         foreach ($api->getAlbumVideos($client, $this->vimeo_albumId) as $video) {
+            // Fetch the image data
+            if (($image = $api->getVideoImage($client, $video->getId(), Config::get('vimeo_imageIndex'))) !== null) {
+                $video->setPicturesData($image);
+            }
+
             $video->setPosterSize($posterSize);
 
             // Enable the lightbox

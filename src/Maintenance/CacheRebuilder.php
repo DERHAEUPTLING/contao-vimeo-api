@@ -15,12 +15,14 @@ namespace Derhaeuptling\VimeoApi\Maintenance;
 
 use Contao\Automator;
 use Contao\BackendTemplate;
+use Contao\Config;
 use Contao\ContentModel;
 use Contao\Database;
 use Contao\Environment;
 use Contao\Input;
 use Contao\System;
 use Derhaeuptling\VimeoApi\VimeoApi;
+use Derhaeuptling\VimeoApi\VimeoVideo;
 
 class CacheRebuilder implements \executable
 {
@@ -138,7 +140,8 @@ LEFT JOIN tl_news ON tl_news.id=tl_content.pid AND tl_content.ptable='tl_news'
 LEFT JOIN tl_news_archive ON tl_news_archive.id=tl_news.pid
 LEFT JOIN tl_calendar_events ON tl_calendar_events.id=tl_content.pid AND tl_content.ptable='tl_calendar_events'
 LEFT JOIN tl_calendar ON tl_calendar.id=tl_calendar_events.pid
-WHERE tl_content.type='vimeo_album' OR tl_content.type='vimeo_video'")
+WHERE (tl_content.type='vimeo_album' OR tl_content.type='vimeo_video')
+")
             ->fetchAllAssoc();
     }
 
@@ -190,16 +193,24 @@ WHERE tl_content.type='vimeo_album' OR tl_content.type='vimeo_video'")
 
         switch ($contentElement->type) {
             case 'vimeo_album':
-                if ($api->getAlbum($client, $contentElement->vimeo_albumId) === null ||
-                    count($api->getAlbumVideos($client, $contentElement->vimeo_albumId)) < 1
-                ) {
+                if (($album = $api->getAlbum($client, $contentElement->vimeo_albumId)) === null) {
                     header('HTTP/1.1 400 Bad Request');
                     die('Bad Request');
+                }
+
+                /** @var VimeoVideo $video */
+                foreach ($api->getAlbumVideos($client, $contentElement->vimeo_albumId) as $video) {
+                    if (!$this->rebuildVideoCache($api, $video)) {
+                        header('HTTP/1.1 400 Bad Request');
+                        die('Bad Request');
+                    }
                 }
                 break;
 
             case 'vimeo_video':
-                if ($api->getVideo($client, $contentElement->vimeo_videoId) === null) {
+                if (($video = $api->getVideo($client, $contentElement->vimeo_videoId)) === null
+                    || !$this->rebuildVideoCache($api, $video)
+                ) {
                     header('HTTP/1.1 400 Bad Request');
                     die('Bad Request');
                 }
@@ -208,5 +219,27 @@ WHERE tl_content.type='vimeo_album' OR tl_content.type='vimeo_video'")
 
         header('HTTP/1.1 200 OK');
         die('OK');
+    }
+
+    /**
+     * Rebuild the video cache
+     *
+     * @param VimeoApi   $api
+     * @param VimeoVideo $video
+     *
+     * @return bool
+     */
+    protected function rebuildVideoCache(VimeoApi $api, VimeoVideo $video)
+    {
+        $client = $api->getClient();
+
+        if (($image = $api->getVideoImage($client, $video->getId(), Config::get('vimeo_imageIndex'))) === null) {
+            return false;
+        }
+
+        $video->setPicturesData($image);
+        $video->downloadPoster();
+
+        return true;
     }
 }

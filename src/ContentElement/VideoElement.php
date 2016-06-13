@@ -13,6 +13,7 @@
 
 namespace Derhaeuptling\VimeoApi\ContentElement;
 
+use Contao\Config;
 use Contao\ContentElement;
 use Contao\FrontendTemplate;
 use Derhaeuptling\VimeoApi\VimeoApi;
@@ -107,8 +108,15 @@ class VideoElement extends ContentElement
      */
     protected function getVideo()
     {
-        $api = new VimeoApi(new VideoCache());
+        $api    = new VimeoApi(new VideoCache());
+        $client = $api->getClient();
 
-        return $api->getVideo($api->getClient(), $this->vimeo_videoId);
+        if (($video = $api->getVideo($client, $this->vimeo_videoId)) !== null
+            && ($image = $api->getVideoImage($client, $this->vimeo_videoId, Config::get('vimeo_imageIndex'))) !== null
+        ) {
+            $video->setPicturesData($image);
+        }
+
+        return $video;
     }
 }

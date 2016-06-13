@@ -100,6 +100,64 @@ class VimeoApi
     }
 
     /**
+     * Get the video image
+     *
+     * @param Vimeo  $client
+     * @param string $videoId
+     * @param int    $index
+     *
+     * @return array|null
+     *
+     * @throws \InvalidArgumentException
+     */
+    public function getVideoImage(Vimeo $client, $videoId, $index)
+    {
+        if ($index < 1) {
+            throw new \InvalidArgumentException('The image index cannot be smaller than 1');
+        }
+
+        $cacheKey = 'video_' . $videoId;
+
+        // Check if the Video exists if the first image was requested
+        if ($index === 1 && $this->cache->hasData($cacheKey)) {
+            $videoData = $this->cache->getData($cacheKey);
+
+            if (isset($videoData['pictures']['sizes'])) {
+                return $videoData['pictures']['sizes'];
+            }
+        }
+
+        $cacheKey = 'video_images_'.$videoId;
+
+        if ($this->cache->hasData($cacheKey)) {
+            $imageData = $this->cache->getData($cacheKey);
+        } else {
+            try {
+                $data = $client->request('/videos/'.$videoId.'/pictures');
+            } catch (\Exception $e) {
+                System::log(sprintf('Unable to fetch image for Vimeo video ID %s with error "%s"', $videoId, $e->getMessage()), __METHOD__, TL_ERROR);
+
+                return null;
+            }
+
+            if ($data['status'] !== 200) {
+                System::log(sprintf('Unable to fetch image for Vimeo video ID %s with error "%s" (status code: %s)', $videoId, $data['body']['error'], $data['status']), __METHOD__, TL_ERROR);
+
+                return null;
+            }
+
+            $imageData = $data['body'];
+
+            // Cache the data
+            $this->cache->setData($cacheKey, $imageData);
+        }
+
+        $index = $index - 1;
+
+        return isset($imageData['data'][$index]['sizes']) ? $imageData['data'][$index]['sizes'] : $imageData['data'][0]['sizes'];
+    }
+
+    /**
      * Get the parent album of the video
      *
      * @param Vimeo  $client

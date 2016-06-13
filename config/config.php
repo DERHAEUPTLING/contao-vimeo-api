@@ -31,3 +31,10 @@ $GLOBALS['TL_PURGE']['folders']['vimeo'] = [
     'callback' => ['Derhaeuptling\VimeoApi\VideoCache', 'purge'],
     'affected' => [\Derhaeuptling\VimeoApi\VideoCache::getRootFolder()],
 ];
+
+/**
+ * Set the default image index for Vimeo
+ */
+if (!$GLOBALS['TL_CONFIG']['vimeo_imageIndex']) {
+    $GLOBALS['TL_CONFIG']['vimeo_imageIndex'] = 1;
+}

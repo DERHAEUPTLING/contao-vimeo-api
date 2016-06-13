@@ -177,6 +177,16 @@ class VimeoVideo
     }
 
     /**
+     * Set the pictures data
+     *
+     * @param array $data
+     */
+    public function setPicturesData(array $data)
+    {
+        $this->data['pictures']['sizes'] = $data;
+    }
+
+    /**
      * Enable the lightbox
      */
     public function enableLightbox()
@@ -348,7 +358,7 @@ class VimeoVideo
      *
      * @return string
      */
-    protected function downloadPoster()
+    public function downloadPoster()
     {
         if (!is_array($this->data['pictures']['sizes'])) {
             return '';

@@ -17,6 +17,7 @@
 $GLOBALS['TL_LANG']['tl_settings']['vimeo_clientId']     = ['Vimeo client ID', 'Please enter the Vimeo client ID.'];
 $GLOBALS['TL_LANG']['tl_settings']['vimeo_clientSecret'] = ['Vimeo client secret', 'Please enter the Vimeo client secret.'];
 $GLOBALS['TL_LANG']['tl_settings']['vimeo_accessToken']  = ['Vimeo access token', 'Please enter the Vimeo access token (it can be generated in your Vimeo app settings).'];
+$GLOBALS['TL_LANG']['tl_settings']['vimeo_imageIndex']   = ['Vimeo image index', 'Here you can enter the Vimeo image index to be downloaded. For example, if you enter 2 the second image will be downloaded instead of the first one (default).'];
 
 /**
  * Reference
