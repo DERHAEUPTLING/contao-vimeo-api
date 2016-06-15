@@ -83,17 +83,17 @@ class CacheRebuilder implements \executable
                 switch ($data['ptable']) {
                     case 'tl_article':
                         $source = $GLOBALS['TL_LANG']['tl_maintenance']['vimeo.tableSourceRef']['article'];
-                        $path   = [$data['page'], $data['article']];
+                        $path   = [$data['_page'], $data['_article']];
                         break;
 
                     case 'tl_news':
                         $source = $GLOBALS['TL_LANG']['tl_maintenance']['vimeo.tableSourceRef']['news'];
-                        $path   = [$data['archive'], $data['news']];
+                        $path   = [$data['_archive'], $data['_news']];
                         break;
 
                     case 'tl_calendar_events':
                         $source = $GLOBALS['TL_LANG']['tl_maintenance']['vimeo.tableSourceRef']['event'];
-                        $path   = [$data['calendar'], $data['event']];
+                        $path   = [$data['_calendar'], $data['_event']];
                         break;
 
                     default:
@@ -121,18 +121,24 @@ class CacheRebuilder implements \executable
      * Get the content elements
      *
      * @return array
+     *
+     * @throws \RuntimeException
      */
     protected function getContentElements()
     {
-        return Database::getInstance()->execute("
+        if (!is_array($GLOBALS['VIMEO_CACHE_REBUILDER']) || count($GLOBALS['VIMEO_CACHE_REBUILDER']) < 1) {
+            return [];
+        }
+
+        $elements = Database::getInstance()->execute("
 SELECT
-tl_content.id, tl_content.type, tl_content.vimeo_albumId, tl_content.vimeo_videoId, tl_content.ptable,
-tl_article.title AS article,
-tl_page.title AS page,
-tl_news.headline AS news,
-tl_news_archive.title AS archive,
-tl_calendar_events.title AS event,
-tl_calendar.title AS calendar
+tl_content.*,
+tl_article.title AS _article,
+tl_page.title AS _page,
+tl_news.headline AS _news,
+tl_news_archive.title AS _archive,
+tl_calendar_events.title AS _event,
+tl_calendar.title AS _calendar
 FROM tl_content
 LEFT JOIN tl_article ON tl_article.id=tl_content.pid AND tl_content.ptable='tl_article'
 LEFT JOIN tl_page ON tl_page.id=tl_article.pid
@@ -140,9 +146,52 @@ LEFT JOIN tl_news ON tl_news.id=tl_content.pid AND tl_content.ptable='tl_news'
 LEFT JOIN tl_news_archive ON tl_news_archive.id=tl_news.pid
 LEFT JOIN tl_calendar_events ON tl_calendar_events.id=tl_content.pid AND tl_content.ptable='tl_calendar_events'
 LEFT JOIN tl_calendar ON tl_calendar.id=tl_calendar_events.pid
-WHERE (tl_content.type='vimeo_album' OR tl_content.type='vimeo_video')
+WHERE tl_content.type IN ('".implode("','", array_keys($GLOBALS['VIMEO_CACHE_REBUILDER']))."')
 ")
             ->fetchAllAssoc();
+
+        // Check which elements are eligible for the cache rebuild
+        foreach ($elements as $k => $v) {
+            $callback = $this->getCallbackInstance($v['type']);
+
+            if (!$callback->isEligible($v)) {
+                unset($elements[$k]);
+            }
+        }
+
+        return $elements;
+    }
+
+    /**
+     * Get the callback instance
+     *
+     * @param string $type
+     *
+     * @return CacheRebuildInterface
+     *
+     * @throws \InvalidArgumentException
+     * @throws \RuntimeException
+     */
+    protected function getCallbackInstance($type)
+    {
+        $className = $GLOBALS['VIMEO_CACHE_REBUILDER'][$type];
+
+        if (!class_exists($className)) {
+            throw new \InvalidArgumentException(
+                sprintf('The class %s does not exist', $className)
+            );
+        }
+
+        /** @var CacheRebuildInterface $class */
+        $class = new $className;
+
+        if (!($class instanceof CacheRebuildInterface)) {
+            throw new \RuntimeException(
+                sprintf('The class %s must implement the CacheRebuildInterface interface', $className)
+            );
+        }
+
+        return $class;
     }
 
     /**
@@ -174,10 +223,16 @@ WHERE (tl_content.type='vimeo_album' OR tl_content.type='vimeo_video')
     {
         $automator = new Automator();
         $automator->purgePageCache();
+
+        header('HTTP/1.1 200 OK');
+        die('OK');
     }
 
     /**
      * Rebuild the Vimeo cache
+     *
+     * @throws \InvalidArgumentException
+     * @throws \RuntimeException
      */
     protected function rebuildVimeoCache()
     {
@@ -188,58 +243,15 @@ WHERE (tl_content.type='vimeo_album' OR tl_content.type='vimeo_video')
             die('Bad Request');
         }
 
-        $api    = new VimeoApi(new ClearCache());
-        $client = $api->getClient();
+        $api      = new VimeoApi(new ClearCache());
+        $callback = $this->getCallbackInstance($contentElement->type);
 
-        switch ($contentElement->type) {
-            case 'vimeo_album':
-                if (($album = $api->getAlbum($client, $contentElement->vimeo_albumId)) === null) {
-                    header('HTTP/1.1 400 Bad Request');
-                    die('Bad Request');
-                }
-
-                /** @var VimeoVideo $video */
-                foreach ($api->getAlbumVideos($client, $contentElement->vimeo_albumId) as $video) {
-                    if (!$this->rebuildVideoCache($api, $video)) {
-                        header('HTTP/1.1 400 Bad Request');
-                        die('Bad Request');
-                    }
-                }
-                break;
-
-            case 'vimeo_video':
-                if (($video = $api->getVideo($client, $contentElement->vimeo_videoId)) === null
-                    || !$this->rebuildVideoCache($api, $video)
-                ) {
-                    header('HTTP/1.1 400 Bad Request');
-                    die('Bad Request');
-                }
-                break;
+        if (!$callback->rebuild($api, $contentElement)) {
+            header('HTTP/1.1 400 Bad Request');
+            die('Bad Request');
         }
 
         header('HTTP/1.1 200 OK');
         die('OK');
-    }
-
-    /**
-     * Rebuild the video cache
-     *
-     * @param VimeoApi   $api
-     * @param VimeoVideo $video
-     *
-     * @return bool
-     */
-    protected function rebuildVideoCache(VimeoApi $api, VimeoVideo $video)
-    {
-        $client = $api->getClient();
-
-        if (($image = $api->getVideoImage($client, $video->getId(), Config::get('vimeo_imageIndex'))) === null) {
-            return false;
-        }
-
-        $video->setPicturesData($image);
-        $video->downloadPoster();
-
-        return true;
     }
 }

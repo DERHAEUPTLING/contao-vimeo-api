@@ -33,6 +33,12 @@ $GLOBALS['TL_PURGE']['folders']['vimeo'] = [
 ];
 
 /**
+ * Eligible content element types for Vimeo cache rebuild
+ */
+$GLOBALS['VIMEO_CACHE_REBUILDER']['vimeo_album'] = 'Derhaeuptling\VimeoApi\Maintenance\AlbumCacheRebuilder';
+$GLOBALS['VIMEO_CACHE_REBUILDER']['vimeo_video'] = 'Derhaeuptling\VimeoApi\Maintenance\VideoCacheRebuilder';
+
+/**
  * Set the default image index for Vimeo
  */
 if (!$GLOBALS['TL_CONFIG']['vimeo_imageIndex']) {
