@@ -318,7 +318,7 @@ class VimeoApi
             $albumVideosData = $this->cache->getData($cacheKey);
         } else {
             $albumVideosData = [];
-            $endpoint = '/albums/' . $albumId . '/videos';
+            $endpoint = '/albums/' . $albumId . '/videos?sort=manual';
 
             do {
                 try {
