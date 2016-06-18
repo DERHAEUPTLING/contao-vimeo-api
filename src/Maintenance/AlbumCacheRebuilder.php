@@ -49,7 +49,13 @@ class AlbumCacheRebuilder implements CacheRebuildInterface
         }
 
         /** @var VimeoVideo $video */
-        foreach ($api->getAlbumVideos($client, $contentElement->vimeo_albumId) as $video) {
+        foreach ($api->getAlbumVideos(
+            $client,
+            $contentElement->vimeo_albumId,
+            true,
+            $contentElement->vimeo_sorting,
+            $contentElement->vimeo_sortingDirection
+        ) as $video) {
             if (($image = $api->getVideoImage($client, $video->getId(), Config::get('vimeo_imageIndex'))) === null) {
                 return false;
             }

@@ -63,7 +63,13 @@ class AlbumElement extends ContentElement
 
         // Generate the videos
         /** @var VimeoVideo $video */
-        foreach ($api->getAlbumVideos($client, $this->vimeo_albumId) as $video) {
+        foreach ($api->getAlbumVideos(
+            $client,
+            $this->vimeo_albumId,
+            true,
+            $this->vimeo_sorting,
+            $this->vimeo_sortingDirection
+        ) as $video) {
             // Fetch the image data
             if (($image = $api->getVideoImage($client, $video->getId(), Config::get('vimeo_imageIndex'))) !== null) {
                 $video->setPicturesData($image);

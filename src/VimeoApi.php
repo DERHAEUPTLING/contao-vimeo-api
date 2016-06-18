@@ -266,12 +266,14 @@ class VimeoApi
      * @param Vimeo  $client
      * @param string $albumId
      * @param bool   $albumData
+     * @param string $sorting
+     * @param string $direction
      *
      * @return array
      */
-    public function getAlbumVideos(Vimeo $client, $albumId, $albumData = true)
+    public function getAlbumVideos(Vimeo $client, $albumId, $albumData = true, $sorting = null, $direction = null)
     {
-        $albumVideosData = $this->getAlbumVideosData($client, $albumId);
+        $albumVideosData = $this->getAlbumVideosData($client, $albumId, $sorting, $direction);
 
         if (count($albumVideosData) === 0) {
             return [];
@@ -288,7 +290,7 @@ class VimeoApi
 
         // Generate videos
         foreach ($albumVideosData['data'] as $videoData) {
-            $videoId  = (int)str_replace('/videos/', '', $videoData['uri']);
+            $videoId = (int)str_replace('/videos/', '', $videoData['uri']);
             $video = new VimeoVideo($videoId, $videoData, $this->cache);
 
             // Include the album data
@@ -307,10 +309,12 @@ class VimeoApi
      *
      * @param Vimeo  $client
      * @param string $albumId
+     * @param string $sorting
+     * @param string $direction
      *
      * @return array
      */
-    protected function getAlbumVideosData(Vimeo $client, $albumId)
+    protected function getAlbumVideosData(Vimeo $client, $albumId, $sorting = null, $direction = null)
     {
         $cacheKey = 'album_videos_' . $albumId;
 
@@ -318,7 +322,12 @@ class VimeoApi
             $albumVideosData = $this->cache->getData($cacheKey);
         } else {
             $albumVideosData = [];
-            $endpoint = '/albums/' . $albumId . '/videos?sort=manual';
+            $endpoint = '/albums/' . $albumId . '/videos';
+            
+            // Apply the sorting
+            if ($sorting) {
+                $endpoint .= '?sort='.$sorting.($direction ? ('&direction='.$direction) : '');
+            }
 
             do {
                 try {
