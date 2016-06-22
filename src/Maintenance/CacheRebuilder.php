@@ -254,4 +254,19 @@ WHERE tl_content.type IN ('".implode("','", array_keys($GLOBALS['VIMEO_CACHE_REB
         header('HTTP/1.1 200 OK');
         die('OK');
     }
+
+    /**
+     * Rebuild the element cache
+     *
+     * @param ContentModel $contentElement
+     *
+     * @throws \InvalidArgumentException
+     * @throws \RuntimeException
+     */
+    public function rebuildElementCache(ContentModel $contentElement)
+    {
+        $api      = new VimeoApi(new ClearCache());
+        $callback = $this->getCallbackInstance($contentElement->type);
+        $callback->rebuild($api, $contentElement);
+    }
 }

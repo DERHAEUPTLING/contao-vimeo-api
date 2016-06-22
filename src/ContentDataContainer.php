@@ -1,0 +1,42 @@
+<?php
+
+/**
+ * vimeo_api extension for Contao Open Source CMS
+ *
+ * Copyright (C) 2016 derhaeuptling
+ *
+ * @author  derhaeuptling <https://derhaeuptling.com>
+ * @author  Codefog <http://codefog.pl>
+ * @author  Kamil Kuzminski <kamil.kuzminski@codefog.pl>
+ * @license LGPL
+ */
+
+namespace Derhaeuptling\VimeoApi;
+
+use Contao\ContentModel;
+use Contao\DataContainer;
+use Contao\System;
+use Derhaeuptling\VimeoApi\Maintenance\CacheRebuilder;
+
+class ContentDataContainer
+{
+    /**
+     * Rebuild Vimeo cache
+     *
+     * @param DataContainer $dc
+     */
+    public function rebuildVimeoCache(DataContainer $dc)
+    {
+        $rebuilder = new CacheRebuilder();
+
+        try {
+            $rebuilder->rebuildElementCache(ContentModel::findByPk($dc->id));
+        } catch (\Exception $e) {
+            System::log(
+                sprintf('Unable to rebuild Vimeo cache of element ID %s: %s', $dc->id, $e->getMessage()),
+                __METHOD__,
+                TL_ERROR
+            );
+        }
+    }
+}

@@ -12,6 +12,13 @@
  */
 
 /**
+ * Add global callbacks
+ */
+$GLOBALS['TL_DCA']['tl_content']['config']['onsubmit_callback'][] = [
+    'Derhaeuptling\VimeoApi\ContentDataContainer', 'rebuildVimeoCache'
+];
+
+/**
  * Add palettes
  */
 $GLOBALS['TL_DCA']['tl_content']['palettes']['__selector__'][]        = 'vimeo_customPoster';
