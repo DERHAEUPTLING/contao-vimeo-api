@@ -260,6 +260,8 @@ WHERE tl_content.type IN ('".implode("','", array_keys($GLOBALS['VIMEO_CACHE_REB
      *
      * @param ContentModel $contentElement
      *
+     * @return bool
+     *
      * @throws \InvalidArgumentException
      * @throws \RuntimeException
      */
@@ -267,6 +269,7 @@ WHERE tl_content.type IN ('".implode("','", array_keys($GLOBALS['VIMEO_CACHE_REB
     {
         $api      = new VimeoApi(new ClearCache());
         $callback = $this->getCallbackInstance($contentElement->type);
-        $callback->rebuild($api, $contentElement);
+
+        return $callback->rebuild($api, $contentElement);
     }
 }

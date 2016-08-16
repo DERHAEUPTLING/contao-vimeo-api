@@ -40,3 +40,5 @@ $GLOBALS['TL_LANG']['tl_content']['vimeo_sorting']['modified_time']  = 'Modified
 $GLOBALS['TL_LANG']['tl_content']['vimeo_sortingDirection']['blank'] = 'Default';
 $GLOBALS['TL_LANG']['tl_content']['vimeo_sortingDirection']['asc']   = 'Ascending';
 $GLOBALS['TL_LANG']['tl_content']['vimeo_sortingDirection']['desc']  = 'Descending';
+$GLOBALS['TL_LANG']['tl_content']['vimeo_cacheConfirm']              = 'The cache has been successfully rebuilt.';
+$GLOBALS['TL_LANG']['tl_content']['vimeo_cacheError']                = 'The cache could not have been rebuilt. Check the system logs for details.';

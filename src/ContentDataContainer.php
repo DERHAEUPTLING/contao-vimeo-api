@@ -15,6 +15,7 @@ namespace Derhaeuptling\VimeoApi;
 
 use Contao\ContentModel;
 use Contao\DataContainer;
+use Contao\Message;
 use Contao\System;
 use Derhaeuptling\VimeoApi\Maintenance\CacheRebuilder;
 
@@ -30,13 +31,21 @@ class ContentDataContainer
         $rebuilder = new CacheRebuilder();
 
         try {
-            $rebuilder->rebuildElementCache(ContentModel::findByPk($dc->id));
+            $result = $rebuilder->rebuildElementCache(ContentModel::findByPk($dc->id));
         } catch (\Exception $e) {
             System::log(
                 sprintf('Unable to rebuild Vimeo cache of element ID %s: %s', $dc->id, $e->getMessage()),
                 __METHOD__,
                 TL_ERROR
             );
+
+            $result = false;
+        }
+
+        if ($result) {
+            Message::addConfirmation($GLOBALS['TL_LANG']['tl_content']['vimeo_cacheConfirm']);
+        } else {
+            Message::addError($GLOBALS['TL_LANG']['tl_content']['vimeo_cacheError']);
         }
     }
 }
