@@ -50,7 +50,10 @@ class VimeoApi
         $clientSecret = $clientSecret ?: Config::get('vimeo_clientSecret');
         $accessToken  = $accessToken ?: Config::get('vimeo_accessToken');
 
-        return new Vimeo($clientId, $clientSecret, $accessToken);
+        $client = new VimeoClient($clientId, $clientSecret, $accessToken);
+        $client->setCache($this->cache);
+
+        return $client;
     }
 
     /**
@@ -66,7 +69,7 @@ class VimeoApi
     {
         $cacheKey = 'video_' . $videoId;
 
-        if ($this->cache->hasData($cacheKey) === true) {
+        if ($this->cache->hasData($cacheKey)) {
             $videoData = $this->cache->getData($cacheKey);
         } else {
             try {
@@ -167,9 +170,10 @@ class VimeoApi
      */
     protected function getAlbumByVideo(Vimeo $client, $videoId)
     {
+        $videoId  = (int)$videoId;
         $cacheKey = 'album_by_video_' . $videoId;
 
-        if ($this->cache->hasData($cacheKey) === true) {
+        if ($this->cache->hasData($cacheKey)) {
             $albumData = $this->cache->getData($cacheKey);
         } else {
             $endpoint = '/me/albums';
@@ -178,13 +182,13 @@ class VimeoApi
                 try {
                     $data = $client->request($endpoint);
                 } catch (\Exception $e) {
-                    System::log(sprintf('Unable to fetch Vimeo albums from "/me/albums" with error "%s"', $e->getMessage()), __METHOD__, TL_ERROR);
+                    System::log(sprintf('Unable to fetch Vimeo albums from "%s" with error "%s"', $endpoint, $e->getMessage()), __METHOD__, TL_ERROR);
 
                     return [];
                 }
 
                 if ($data['status'] !== 200) {
-                    System::log(sprintf('Unable to fetch Vimeo albums from "/me/albums" with error "%s" (status code: %s)', $data['body']['error'], $data['status']), __METHOD__, TL_ERROR);
+                    System::log(sprintf('Unable to fetch Vimeo albums from "%s" with error "%s" (status code: %s)', $endpoint, $data['body']['error'], $data['status']), __METHOD__, TL_ERROR);
 
                     return [];
                 }
@@ -192,18 +196,17 @@ class VimeoApi
                 $albumData = [];
 
                 // Find the video in the album
-                foreach ($data['body']['data'] as $subData) {
-                    try {
-                        $videoData = $client->request($subData['uri'].'/videos/'.$videoId);
-                    } catch (\Exception $e) {
-                        System::log(sprintf('Unable to fetch Vimeo video ID %s with error "%s"', $videoId, $e->getMessage()), __METHOD__, TL_ERROR);
+                foreach ($data['body']['data'] as $album) {
+                    $albumId = (int)array_pop(trimsplit('/', $album['uri']));
 
-                        continue;
-                    }
+                    foreach ($this->getAlbumVideosData($client, $albumId) as $video) {
+                        $currentVideoId = (int)array_pop(trimsplit('/', $video['uri']));
 
-                    if ($videoData['status'] === 200) {
-                        $albumData = $subData;
-                        break 2;
+                        // Video has been found in the album, break all loops
+                        if ($videoId === $currentVideoId) {
+                            $albumData = $album;
+                            break 3;
+                        }
                     }
                 }
 
@@ -234,7 +237,7 @@ class VimeoApi
     {
         $cacheKey = 'album_' . $albumId;
 
-        if ($this->cache->hasData($cacheKey) === true) {
+        if ($this->cache->hasData($cacheKey)) {
             $albumData = $this->cache->getData($cacheKey);
         } else {
             try {
@@ -316,9 +319,9 @@ class VimeoApi
      */
     protected function getAlbumVideosData(Vimeo $client, $albumId, $sorting = null, $direction = null)
     {
-        $cacheKey = 'album_videos_' . $albumId;
+        $cacheKey = 'album_videos_'.$albumId.($sorting ? ('_'.$sorting) : '').($direction ? ('_'.$direction) : '');
 
-        if ($this->cache->hasData($cacheKey) === true) {
+        if ($this->cache->hasData($cacheKey)) {
             $albumVideosData = $this->cache->getData($cacheKey);
         } else {
             $albumVideosData = [];

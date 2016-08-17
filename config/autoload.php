@@ -24,6 +24,7 @@ ClassLoader::addClasses([
     'Derhaeuptling\VimeoApi\UserDataContainer'                 => 'system/modules/vimeo_api/src/UserDataContainer.php',
     'Derhaeuptling\VimeoApi\VimeoApi'                          => 'system/modules/vimeo_api/src/VimeoApi.php',
     'Derhaeuptling\VimeoApi\VideoCache'                        => 'system/modules/vimeo_api/src/VideoCache.php',
+    'Derhaeuptling\VimeoApi\VimeoClient'                       => 'system/modules/vimeo_api/src/VimeoClient.php',
     'Derhaeuptling\VimeoApi\VimeoVideo'                        => 'system/modules/vimeo_api/src/VimeoVideo.php',
     'Derhaeuptling\VimeoApi\ContentElement\AlbumElement'       => 'system/modules/vimeo_api/src/ContentElement/AlbumElement.php',
     'Derhaeuptling\VimeoApi\ContentElement\VideoElement'       => 'system/modules/vimeo_api/src/ContentElement/VideoElement.php',
