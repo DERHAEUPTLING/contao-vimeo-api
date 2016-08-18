@@ -20,12 +20,17 @@ class ClearCache extends VideoCache
     /**
      * Return true if there is data
      *
-     * @param string $key
+     * @param string   $key
+     * @param callable $callback
      *
      * @return bool
      */
-    public function hasData($key)
+    public function hasData($key, callable $callback = null)
     {
+        if ($callback !== null && parent::hasData($key)) {
+            return $callback(parent::getData($key));
+        }
+
         return false;
     }
 

@@ -12,8 +12,6 @@ class VimeoClient extends Vimeo
      */
     protected $cache;
 
-    protected $reqs = 0;
-
     /**
      * @param VideoCache $cache
      */
@@ -34,10 +32,6 @@ class VimeoClient extends Vimeo
      */
     public function request($url, $params = array(), $method = 'GET', $json_body = true)
     {
-        if ($this->reqs++ > 10) {
-            die('request limit'); // @todo @debug
-        }
-
         $cacheKey = 'request_'.md5(implode('_', [$url, serialize($params), $method, ($json_body ? 1 : 0)]));
 
         if ($this->cache->hasData($cacheKey)) {
@@ -45,7 +39,7 @@ class VimeoClient extends Vimeo
         }
 
         $response = parent::request($url, $params, $method, $json_body);
-//\System::log(print_r($response, true), __METHOD__, TL_ERROR);exit;
+
         if ($response['status'] === 200) {
             $this->cache->setData($cacheKey, $response);
         }
