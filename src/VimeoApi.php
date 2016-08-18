@@ -26,6 +26,42 @@ class VimeoApi
     protected $cache;
 
     /**
+     * Album fields to fetch
+     * @var array
+     */
+    protected $albumFields = [
+        'created_time',
+        'description',
+        'duration',
+        'link',
+        'modified_time',
+        'name',
+        'pictures',
+        'uri',
+        'user',
+    ];
+
+    /**
+     * Video fields to fetch
+     * @var array
+     */
+    protected $videoFields = [
+        'created_time',
+        'description',
+        'duration',
+        'height',
+        'language',
+        'link',
+        'modified_time',
+        'name',
+        'pictures',
+        'release_time',
+        'uri',
+        'user',
+        'width',
+    ];
+
+    /**
      * Api constructor.
      *
      * @param VideoCache $cache
@@ -73,7 +109,7 @@ class VimeoApi
             $videoData = $this->cache->getData($cacheKey);
         } else {
             try {
-                $data = $client->request('/videos/'.$videoId);
+                $data = $client->request('/videos/'.$videoId, ['fields' => implode(',', $this->videoFields)]);
             } catch (\Exception $e) {
                 System::log(sprintf('Unable to fetch Vimeo video ID %s with error "%s"', $videoId, $e->getMessage()), __METHOD__, TL_ERROR);
 
@@ -177,7 +213,10 @@ class VimeoApi
             $albumData = $this->cache->getData($cacheKey);
         } else {
             $endpoint = '/me/albums';
-            $params   = ['per_page' => 50];
+            $params   = [
+                'per_page' => 50,
+                'fields'   => implode(',', $this->albumFields),
+            ];
 
             do {
                 try {
@@ -253,7 +292,7 @@ class VimeoApi
             $albumData = $this->cache->getData($cacheKey);
         } else {
             try {
-                $data = $client->request('/albums/'.$albumId);
+                $data = $client->request('/albums/'.$albumId, ['fields' => implode(',', $this->albumFields)]);
             } catch (\Exception $e) {
                 System::log(sprintf('Unable to fetch Vimeo album ID %s with error "%s"', $albumId, $e->getMessage()), __METHOD__, TL_ERROR);
 
@@ -348,7 +387,10 @@ class VimeoApi
         } else {
             $albumVideosData = [];
             $endpoint        = '/albums/'.$albumId.'/videos';
-            $params          = ['per_page' => 50];
+            $params          = [
+                'per_page' => 50,
+                'fields'   => implode(',', $this->videoFields),
+            ];
 
             // Apply the sorting
             if ($sorting) {
@@ -358,7 +400,7 @@ class VimeoApi
 
             do {
                 try {
-                    $data = $client->request($endpoint,  $params);
+                    $data = $client->request($endpoint, $params);
 
                     // Reset the params as they will be appended to the next endpoint automatically by Vimeo
                     $params = [];
