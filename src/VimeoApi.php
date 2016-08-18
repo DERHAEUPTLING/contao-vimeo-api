@@ -36,9 +36,7 @@ class VimeoApi
         'link',
         'modified_time',
         'name',
-        'pictures',
         'uri',
-        'user',
     ];
 
     /**
@@ -57,7 +55,6 @@ class VimeoApi
         'pictures',
         'release_time',
         'uri',
-        'user',
         'width',
     ];
 
