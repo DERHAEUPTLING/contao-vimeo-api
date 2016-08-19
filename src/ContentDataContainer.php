@@ -32,7 +32,9 @@ class ContentDataContainer
 
         try {
             $result = $rebuilder->rebuildElementCache(ContentModel::findByPk($dc->id));
-        } catch (\Exception $e) {
+        } catch (\InvalidArgumentException $e) {
+            return;
+        } catch (\RuntimeException $e) {
             System::log(
                 sprintf('Unable to rebuild Vimeo cache of element ID %s: %s', $dc->id, $e->getMessage()),
                 __METHOD__,
