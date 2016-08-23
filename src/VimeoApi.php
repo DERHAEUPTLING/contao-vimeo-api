@@ -26,6 +26,39 @@ class VimeoApi
     protected $cache;
 
     /**
+     * Album fields to fetch
+     * @var array
+     */
+    protected $albumFields = [
+        'created_time',
+        'description',
+        'duration',
+        'link',
+        'modified_time',
+        'name',
+        'uri',
+    ];
+
+    /**
+     * Video fields to fetch
+     * @var array
+     */
+    protected $videoFields = [
+        'created_time',
+        'description',
+        'duration',
+        'height',
+        'language',
+        'link',
+        'modified_time',
+        'name',
+        'pictures',
+        'release_time',
+        'uri',
+        'width',
+    ];
+
+    /**
      * Api constructor.
      *
      * @param VideoCache $cache
@@ -50,7 +83,10 @@ class VimeoApi
         $clientSecret = $clientSecret ?: Config::get('vimeo_clientSecret');
         $accessToken  = $accessToken ?: Config::get('vimeo_accessToken');
 
-        return new Vimeo($clientId, $clientSecret, $accessToken);
+        $client = new VimeoClient($clientId, $clientSecret, $accessToken);
+        $client->setCache($this->cache);
+
+        return $client;
     }
 
     /**
@@ -66,11 +102,11 @@ class VimeoApi
     {
         $cacheKey = 'video_' . $videoId;
 
-        if ($this->cache->hasData($cacheKey) === true) {
+        if ($this->cache->hasData($cacheKey)) {
             $videoData = $this->cache->getData($cacheKey);
         } else {
             try {
-                $data = $client->request('/videos/'.$videoId);
+                $data = $client->request('/videos/'.$videoId, ['fields' => implode(',', $this->videoFields)]);
             } catch (\Exception $e) {
                 System::log(sprintf('Unable to fetch Vimeo video ID %s with error "%s"', $videoId, $e->getMessage()), __METHOD__, TL_ERROR);
 
@@ -167,24 +203,32 @@ class VimeoApi
      */
     protected function getAlbumByVideo(Vimeo $client, $videoId)
     {
+        $videoId  = (int)$videoId;
         $cacheKey = 'album_by_video_' . $videoId;
 
-        if ($this->cache->hasData($cacheKey) === true) {
+        if ($this->cache->hasData($cacheKey)) {
             $albumData = $this->cache->getData($cacheKey);
         } else {
             $endpoint = '/me/albums';
+            $params   = [
+                'per_page' => 50,
+                'fields'   => implode(',', $this->albumFields),
+            ];
 
             do {
                 try {
-                    $data = $client->request($endpoint);
+                    $data   = $client->request($endpoint, $params);
+
+                    // Reset the params as they will be appended to the next endpoint automatically by Vimeo
+                    $params = [];
                 } catch (\Exception $e) {
-                    System::log(sprintf('Unable to fetch Vimeo albums from "/me/albums" with error "%s"', $e->getMessage()), __METHOD__, TL_ERROR);
+                    System::log(sprintf('Unable to fetch Vimeo albums from "%s" with error "%s"', $endpoint, $e->getMessage()), __METHOD__, TL_ERROR);
 
                     return [];
                 }
 
                 if ($data['status'] !== 200) {
-                    System::log(sprintf('Unable to fetch Vimeo albums from "/me/albums" with error "%s" (status code: %s)', $data['body']['error'], $data['status']), __METHOD__, TL_ERROR);
+                    System::log(sprintf('Unable to fetch Vimeo albums from "%s" with error "%s" (status code: %s)', $endpoint, $data['body']['error'], $data['status']), __METHOD__, TL_ERROR);
 
                     return [];
                 }
@@ -192,18 +236,17 @@ class VimeoApi
                 $albumData = [];
 
                 // Find the video in the album
-                foreach ($data['body']['data'] as $subData) {
-                    try {
-                        $videoData = $client->request($subData['uri'].'/videos/'.$videoId);
-                    } catch (\Exception $e) {
-                        System::log(sprintf('Unable to fetch Vimeo video ID %s with error "%s"', $videoId, $e->getMessage()), __METHOD__, TL_ERROR);
+                foreach ($data['body']['data'] as $album) {
+                    $albumId = (int)array_pop(trimsplit('/', $album['uri']));
 
-                        continue;
-                    }
+                    foreach ($this->getAlbumVideosData($client, $albumId, null, null, $album['modified_time']) as $video) {
+                        $currentVideoId = (int)array_pop(trimsplit('/', $video['uri']));
 
-                    if ($videoData['status'] === 200) {
-                        $albumData = $subData;
-                        break 2;
+                        // Video has been found in the album, break all loops
+                        if ($videoId === $currentVideoId) {
+                            $albumData = $album;
+                            break 3;
+                        }
                     }
                 }
 
@@ -227,18 +270,26 @@ class VimeoApi
      *
      * @param Vimeo  $client
      * @param string $albumId
+     * @param bool   $forceCache
      *
      * @return array
      */
-    public function getAlbum(Vimeo $client, $albumId)
+    public function getAlbum(Vimeo $client, $albumId, $forceCache = false)
     {
-        $cacheKey = 'album_' . $albumId;
+        $cacheKey   = 'album_'.$albumId;
+        $cacheCheck = null;
 
-        if ($this->cache->hasData($cacheKey) === true) {
+        if ($forceCache) {
+            $cacheCheck = function () {
+                return true;
+            };
+        }
+
+        if ($this->cache->hasData($cacheKey, $cacheCheck)) {
             $albumData = $this->cache->getData($cacheKey);
         } else {
             try {
-                $data = $client->request('/albums/'.$albumId);
+                $data = $client->request('/albums/'.$albumId, ['fields' => implode(',', $this->albumFields)]);
             } catch (\Exception $e) {
                 System::log(sprintf('Unable to fetch Vimeo album ID %s with error "%s"', $albumId, $e->getMessage()), __METHOD__, TL_ERROR);
 
@@ -311,27 +362,45 @@ class VimeoApi
      * @param string $albumId
      * @param string $sorting
      * @param string $direction
+     * @param string $modifiedTime
      *
      * @return array
      */
-    protected function getAlbumVideosData(Vimeo $client, $albumId, $sorting = null, $direction = null)
+    protected function getAlbumVideosData(Vimeo $client, $albumId, $sorting = null, $direction = null, $modifiedTime = null)
     {
-        $cacheKey = 'album_videos_' . $albumId;
+        $cacheKey   = 'album_videos_'.$albumId.($sorting ? ('_'.$sorting) : '').($direction ? ('_'.$direction) : '');
+        $cacheCheck = null;
 
-        if ($this->cache->hasData($cacheKey) === true) {
+        if ($modifiedTime !== null) {
+            $albumData = $this->getAlbum($client, $albumId, true);
+
+            $cacheCheck = function () use ($albumData, $modifiedTime) {
+                return $albumData['modified_time'] === $modifiedTime;
+            };
+        }
+
+        if ($this->cache->hasData($cacheKey, $cacheCheck)) {
             $albumVideosData = $this->cache->getData($cacheKey);
         } else {
             $albumVideosData = [];
-            $endpoint = '/albums/' . $albumId . '/videos';
-            
+            $endpoint        = '/albums/'.$albumId.'/videos';
+            $params          = [
+                'per_page' => 50,
+                'fields'   => implode(',', $this->videoFields),
+            ];
+
             // Apply the sorting
             if ($sorting) {
-                $endpoint .= '?sort='.$sorting.($direction ? ('&direction='.$direction) : '');
+                $params['sort']      = $sorting;
+                $params['direction'] = $direction;
             }
 
             do {
                 try {
-                    $data = $client->request($endpoint);
+                    $data = $client->request($endpoint, $params);
+
+                    // Reset the params as they will be appended to the next endpoint automatically by Vimeo
+                    $params = [];
                 } catch (\Exception $e) {
                     System::log(sprintf('Unable to fetch Vimeo album ID %s with error "%s"', $albumId, $e->getMessage()), __METHOD__, TL_ERROR);
 
