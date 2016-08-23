@@ -11,7 +11,7 @@
  * @license LGPL
  */
 
-namespace Derhaeuptling\VimeoApi;
+namespace Derhaeuptling\VimeoApi\DataContainer;
 
 use Contao\ContentModel;
 use Contao\DataContainer;
@@ -19,7 +19,7 @@ use Contao\Message;
 use Contao\System;
 use Derhaeuptling\VimeoApi\Maintenance\CacheRebuilder;
 
-class ContentDataContainer
+class ContentContainer
 {
     /**
      * Rebuild Vimeo cache

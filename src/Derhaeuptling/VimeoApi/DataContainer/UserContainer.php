@@ -11,9 +11,9 @@
  * @license LGPL
  */
 
-namespace Derhaeuptling\VimeoApi;
+namespace Derhaeuptling\VimeoApi\DataContainer;
 
-class UserDataContainer
+class UserContainer
 {
     /**
      * Generate the purge cache field
