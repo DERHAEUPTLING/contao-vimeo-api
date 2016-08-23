@@ -12,29 +12,9 @@
  */
 
 /**
- * Register the namespace
+ * Register PSR-0 namespace
  */
-ClassLoader::addNamespace('Derhaeuptling\VimeoApi');
-
-/**
- * Register the classes
- */
-ClassLoader::addClasses([
-    'Derhaeuptling\VimeoApi\ContentDataContainer'              => 'system/modules/vimeo_api/src/ContentDataContainer.php',
-    'Derhaeuptling\VimeoApi\UserDataContainer'                 => 'system/modules/vimeo_api/src/UserDataContainer.php',
-    'Derhaeuptling\VimeoApi\VimeoApi'                          => 'system/modules/vimeo_api/src/VimeoApi.php',
-    'Derhaeuptling\VimeoApi\VideoCache'                        => 'system/modules/vimeo_api/src/VideoCache.php',
-    'Derhaeuptling\VimeoApi\VimeoClient'                       => 'system/modules/vimeo_api/src/VimeoClient.php',
-    'Derhaeuptling\VimeoApi\VimeoVideo'                        => 'system/modules/vimeo_api/src/VimeoVideo.php',
-    'Derhaeuptling\VimeoApi\ContentElement\AlbumElement'       => 'system/modules/vimeo_api/src/ContentElement/AlbumElement.php',
-    'Derhaeuptling\VimeoApi\ContentElement\VideoElement'       => 'system/modules/vimeo_api/src/ContentElement/VideoElement.php',
-    'Derhaeuptling\VimeoApi\Maintenance\AlbumCacheRebuilder'   => 'system/modules/vimeo_api/src/Maintenance/AlbumCacheRebuilder.php',
-    'Derhaeuptling\VimeoApi\Maintenance\CacheRebuildInterface' => 'system/modules/vimeo_api/src/Maintenance/CacheRebuildInterface.php',
-    'Derhaeuptling\VimeoApi\Maintenance\CacheRebuilder'        => 'system/modules/vimeo_api/src/Maintenance/CacheRebuilder.php',
-    'Derhaeuptling\VimeoApi\Maintenance\CacheRebuilderPopup'   => 'system/modules/vimeo_api/src/Maintenance/CacheRebuilderPopup.php',
-    'Derhaeuptling\VimeoApi\Maintenance\ClearCache'            => 'system/modules/vimeo_api/src/Maintenance/ClearCache.php',
-    'Derhaeuptling\VimeoApi\Maintenance\VideoCacheRebuilder'   => 'system/modules/vimeo_api/src/Maintenance/VideoCacheRebuilder.php',
-]);
+NamespaceClassLoader::add('Derhaeuptling\VimeoApi', 'system/modules/vimeo_api/src');
 
 /**
  * Register the templates
