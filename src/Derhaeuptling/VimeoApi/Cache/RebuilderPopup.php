@@ -11,7 +11,7 @@
  * @license LGPL
  */
 
-namespace Derhaeuptling\VimeoApi\Maintenance;
+namespace Derhaeuptling\VimeoApi\Cache;
 
 use BackendTemplate;
 use Contao\Ajax;
@@ -21,7 +21,7 @@ use Contao\Environment;
 use Contao\Input;
 use Contao\System;
 
-class CacheRebuilderPopup extends Backend
+class RebuilderPopup extends Backend
 {
     /**
      * Current Ajax object
@@ -62,7 +62,7 @@ class CacheRebuilderPopup extends Backend
             $this->ajax->executePreActions();
         }
 
-        $rebuilder = new CacheRebuilder();
+        $rebuilder = new Rebuilder();
         $rebuilder->setPopupMode(true);
 
         $template->main        = $rebuilder->run();

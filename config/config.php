@@ -18,25 +18,30 @@ $GLOBALS['TL_CTE']['media']['vimeo_album'] = 'Derhaeuptling\VimeoApi\ContentElem
 $GLOBALS['TL_CTE']['media']['vimeo_video'] = 'Derhaeuptling\VimeoApi\ContentElement\VideoElement';
 
 /**
+ * Models
+ */
+$GLOBALS['TL_MODELS']['tl_vimeo_cache'] = 'Derhaeuptling\VimeoApi\Model\CacheModel';
+
+/**
  * Hooks
  */
-$GLOBALS['TL_HOOKS']['executePreActions'][] = ['Derhaeuptling\VimeoApi\Maintenance\CacheRebuilder', 'rebuildCache'];
+$GLOBALS['TL_HOOKS']['executePreActions'][] = ['Derhaeuptling\VimeoApi\Cache\Rebuilder', 'rebuild'];
 
 /**
  * Add the Vimeo purge job
  */
-$GLOBALS['TL_MAINTENANCE'][] = 'Derhaeuptling\VimeoApi\Maintenance\CacheRebuilder';
+$GLOBALS['TL_MAINTENANCE'][] = 'Derhaeuptling\VimeoApi\Cache\Rebuilder';
 
 $GLOBALS['TL_PURGE']['folders']['vimeo'] = [
-    'callback' => ['Derhaeuptling\VimeoApi\VideoCache', 'purge'],
-    'affected' => [\Derhaeuptling\VimeoApi\VideoCache::getRootFolder()],
+    'callback' => ['Derhaeuptling\VimeoApi\Cache\Cache', 'purge'],
+    'affected' => [\Derhaeuptling\VimeoApi\Cache\Cache::$imagesFolder],
 ];
 
 /**
  * Eligible content element types for Vimeo cache rebuild
  */
-$GLOBALS['VIMEO_CACHE_REBUILDER']['vimeo_album'] = 'Derhaeuptling\VimeoApi\Maintenance\AlbumCacheRebuilder';
-$GLOBALS['VIMEO_CACHE_REBUILDER']['vimeo_video'] = 'Derhaeuptling\VimeoApi\Maintenance\VideoCacheRebuilder';
+$GLOBALS['VIMEO_CACHE_REBUILDER']['vimeo_album'] = 'Derhaeuptling\VimeoApi\Cache\Handler\AlbumHandler';
+$GLOBALS['VIMEO_CACHE_REBUILDER']['vimeo_video'] = 'Derhaeuptling\VimeoApi\Cache\Handler\VideoHandler';
 
 /**
  * Set the default image index for Vimeo

@@ -15,7 +15,7 @@
  * Add global callbacks
  */
 $GLOBALS['TL_DCA']['tl_content']['config']['onsubmit_callback'][] = [
-    'Derhaeuptling\VimeoApi\ContentContainer', 'rebuildVimeoCache'
+    'Derhaeuptling\VimeoApi\DataContainer\ContentContainer', 'rebuildVimeoCache'
 ];
 
 /**

@@ -54,26 +54,30 @@
                     var items = $('tl_vimeo_rebuild').getElements('[data-id]'),
                         completed = 0;
 
-                    items.each(function(el) {
-                        new Request.Contao({
-                            onFailure: function () {
-                                el.addClass('row_error');
-                            },
-                            onSuccess: function() {
-                                el.addClass('row_success');
-                            },
-                            onComplete: function () {
-                                if (++completed >= items.length) {
-                                    new Request.Contao({
-                                        onComplete: function () {
-                                            $('index_loading').setStyle('display', 'none');
-                                            $('index_complete').setStyle('display', 'block');
+                    new Request.Contao({
+                        onComplete: function () {
+                            items.each(function(el) {
+                                new Request.Contao({
+                                    onFailure: function () {
+                                        el.addClass('row_error');
+                                    },
+                                    onSuccess: function() {
+                                        el.addClass('row_success');
+                                    },
+                                    onComplete: function () {
+                                        if (++completed >= items.length) {
+                                            new Request.Contao({
+                                                onComplete: function () {
+                                                    $('index_loading').setStyle('display', 'none');
+                                                    $('index_complete').setStyle('display', 'block');
+                                                }
+                                            }).post({'action': '<?= $this->ajaxAction ?>', 'cache': 'page', 'REQUEST_TOKEN': Contao.request_token});
                                         }
-                                    }).post({'action': '<?= $this->ajaxAction ?>', 'cache': 'page', 'REQUEST_TOKEN': Contao.request_token});
-                                }
-                            }
-                        }).post({'action': '<?= $this->ajaxAction ?>', 'cache': 'vimeo', 'id': el.getAttribute('data-id'), 'REQUEST_TOKEN': Contao.request_token});
-                    });
+                                    }
+                                }).post({'action': '<?= $this->ajaxAction ?>', 'cache': 'element', 'id': el.getAttribute('data-id'), 'REQUEST_TOKEN': Contao.request_token});
+                            });
+                        }
+                    }).post({'action': '<?= $this->ajaxAction ?>', 'cache': 'init', 'REQUEST_TOKEN': Contao.request_token});
 
                     if ($(document.body).hasClass('popup')) {
                         $('tl_select').removeClass('unselectable');
@@ -94,10 +98,31 @@
                     <input type="hidden" name="do" value="maintenance">
                     <input type="hidden" name="rt" value="<?= REQUEST_TOKEN ?>">
 
-                    <p class="tl_info"><?= $GLOBALS['TL_LANG']['tl_maintenance']['vimeo.records'] ?>&nbsp;<strong><?= $this->elementsCount ?></strong></p>
+                    <table class="tl_listing">
+                        <thead>
+                        <tr>
+                            <th class="tl_folder_tlist"><?= $GLOBALS['TL_LANG']['tl_maintenance']['vimeo.name'] ?></th>
+                            <th class="tl_folder_tlist"><?= $GLOBALS['TL_LANG']['tl_maintenance']['vimeo.value'] ?></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td class="tl_file_list"><?= $GLOBALS['TL_LANG']['tl_maintenance']['vimeo.elementsLabel'] ?></td>
+                            <td class="tl_file_list"><?= sprintf($GLOBALS['TL_LANG']['tl_maintenance']['vimeo.elements'], $this->elementsCount) ?></td>
+                        </tr>
+                        <tr>
+                            <td class="tl_file_list"><?= $GLOBALS['TL_LANG']['tl_maintenance']['vimeo.limitLabel'] ?></td>
+                            <td class="tl_file_list"><?= $this->totalLimit ? sprintf($GLOBALS['TL_LANG']['tl_maintenance']['vimeo.limitRequests'], $this->currentLimit, $this->totalLimit) : '-' ?></td>
+                        </tr>
+                        <tr>
+                            <td class="tl_file_list"><?= $GLOBALS['TL_LANG']['tl_maintenance']['vimeo.resetLabel'] ?></td>
+                            <td class="tl_file_list"><?= $this->limitReset ?: '-' ?></td>
+                        </tr>
+                        </tbody>
+                    </table>
                 </div>
                 <div class="tl_submit_container">
-                    <input type="submit" id="index" class="tl_submit" value="<?= specialchars($GLOBALS['TL_LANG']['tl_maintenance']['vimeo.submit']) ?>">
+                    <input type="submit" id="index" class="tl_submit" value="<?= specialchars($GLOBALS['TL_LANG']['tl_maintenance']['vimeo.submit']) ?>"<?php if (!$this->canRun): ?> disabled<?php endif; ?>>
                 </div>
             </form>
         <?php endif; ?>

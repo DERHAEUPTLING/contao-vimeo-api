@@ -11,12 +11,12 @@
  * @license LGPL
  */
 
-namespace Derhaeuptling\VimeoApi\Maintenance;
+namespace Derhaeuptling\VimeoApi\Cache\Handler;
 
 use Contao\ContentModel;
-use Derhaeuptling\VimeoApi\VimeoApi;
+use Derhaeuptling\VimeoApi\DataProvider\ProviderInterface;
 
-interface CacheRebuildInterface
+interface HandlerInterface
 {
     /**
      * Return true if the element is eligible for rebuild
@@ -30,10 +30,10 @@ interface CacheRebuildInterface
     /**
      * Rebuild the cache and return true on success, false otherwise
      *
-     * @param VimeoApi     $api
-     * @param ContentModel $contentElement
+     * @param ProviderInterface $dataProvider
+     * @param ContentModel      $contentElement
      *
      * @return bool
      */
-    public function rebuild(VimeoApi $api, ContentModel $contentElement);
+    public function rebuild(ProviderInterface $dataProvider, ContentModel $contentElement);
 }

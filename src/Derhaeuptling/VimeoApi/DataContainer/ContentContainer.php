@@ -17,7 +17,7 @@ use Contao\ContentModel;
 use Contao\DataContainer;
 use Contao\Message;
 use Contao\System;
-use Derhaeuptling\VimeoApi\Maintenance\CacheRebuilder;
+use Derhaeuptling\VimeoApi\Cache\Rebuilder;
 
 class ContentContainer
 {
@@ -28,7 +28,7 @@ class ContentContainer
      */
     public function rebuildVimeoCache(DataContainer $dc)
     {
-        $rebuilder = new CacheRebuilder();
+        $rebuilder = new Rebuilder();
 
         try {
             $result = $rebuilder->rebuildElementCache(ContentModel::findByPk($dc->id));
