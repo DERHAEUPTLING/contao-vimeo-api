@@ -1,0 +1,34 @@
+<div class="clr">
+    <h3><label for="ctrl_name"><?= $GLOBALS['TL_LANG']['tl_user']['vimeoRebuildLabel'][0] ?></label></h3>
+
+    <table class="tl_listing">
+        <thead>
+        <tr>
+            <th class="tl_folder_tlist"><?= $GLOBALS['TL_LANG']['tl_maintenance']['vimeo.name'] ?></th>
+            <th class="tl_folder_tlist"><?= $GLOBALS['TL_LANG']['tl_maintenance']['vimeo.value'] ?></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td class="tl_file_list"><?= $GLOBALS['TL_LANG']['tl_maintenance']['vimeo.elementsLabel'] ?></td>
+            <td class="tl_file_list"><?= sprintf($GLOBALS['TL_LANG']['tl_maintenance']['vimeo.elements'], $this->elementsCount) ?></td>
+        </tr>
+        <tr>
+            <td class="tl_file_list"><?= $GLOBALS['TL_LANG']['tl_maintenance']['vimeo.limitLabel'] ?></td>
+            <td class="tl_file_list"><?= $this->totalLimit ? sprintf($GLOBALS['TL_LANG']['tl_maintenance']['vimeo.limitRequests'], $this->currentLimit, $this->totalLimit) : '-' ?></td>
+        </tr>
+        <tr>
+            <td class="tl_file_list"><?= $GLOBALS['TL_LANG']['tl_maintenance']['vimeo.resetLabel'] ?></td>
+            <td class="tl_file_list"><?= $this->limitReset ?: '-' ?></td>
+        </tr>
+        </tbody>
+    </table>
+
+    <?php if ($this->canRun): ?>
+        <a href="system/modules/vimeo_api/public/rebuild.php" class="tl_submit" style="margin:5px 0;" onclick="Backend.openModalIframe({'width':768,'title':'<?= specialchars($GLOBALS['TL_LANG']['tl_user']['vimeoRebuildLabel'][0]) ?>','url':this.href});return false"><?= specialchars($GLOBALS['TL_LANG']['tl_user']['vimeoRebuildButton']) ?></a>
+    <?php else: ?>
+        <input type="submit" id="index" class="tl_submit" value="<?= specialchars($GLOBALS['TL_LANG']['tl_maintenance']['vimeo.submit']) ?>" style="margin:5px 0;" disabled>
+    <?php endif; ?>
+
+    <p class="tl_help tl_tip"><?= $GLOBALS['TL_LANG']['tl_user']['vimeoRebuildLabel'][1] ?></p>
+</div>

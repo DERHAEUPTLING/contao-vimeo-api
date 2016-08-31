@@ -82,14 +82,10 @@ class Rebuilder implements \executable
         $template->canRun        = true;
 
         // Add the stats data
-        if (Stats::hasData()) {
-            $resetTime  = Stats::get(Stats::LIMIT_RESET_TIME);
-            $limitReset = $resetTime < time();
-
-            $template->totalLimit   = Stats::get(Stats::TOTAL_LIMIT);
-            $template->currentLimit = $limitReset ? $template->totalLimit : Stats::get(Stats::CURRENT_LIMIT);
-            $template->limitReset   = $limitReset ? '' : Date::parse(Config::get('datimFormat'), $resetTime);
-            $template->canRun       = $template->currentLimit > 0 || $limitReset;
+        if (($stats = static::generateStats()) !== null) {
+            foreach ($stats as $k => $v) {
+                $template->$k = $v;
+            }
         }
 
         // Generate the elements
@@ -140,13 +136,37 @@ class Rebuilder implements \executable
     }
 
     /**
+     * Generate the stats data
+     *
+     * @return array|null
+     */
+    public static function generateStats()
+    {
+        if (!Stats::hasData()) {
+            return null;
+        }
+
+        $totalLimit   = Stats::get(Stats::TOTAL_LIMIT);
+        $resetTime    = Stats::get(Stats::LIMIT_RESET_TIME);
+        $limitReset   = $resetTime < time();
+        $currentLimit = $limitReset ? $totalLimit : Stats::get(Stats::CURRENT_LIMIT);
+
+        return [
+            'totalLimit'   => $totalLimit,
+            'currentLimit' => $currentLimit,
+            'limitReset'   => $limitReset ? '' : Date::parse(Config::get('datimFormat'), $resetTime),
+            'canRun'       => $currentLimit > 0 || $limitReset,
+        ];
+    }
+
+    /**
      * Get the content elements
      *
      * @return array
      *
      * @throws \RuntimeException
      */
-    protected function getContentElements()
+    public static function getContentElements()
     {
         if (!is_array($GLOBALS['VIMEO_CACHE_REBUILDER']) || count($GLOBALS['VIMEO_CACHE_REBUILDER']) < 1) {
             return [];
@@ -176,7 +196,7 @@ WHERE tl_content.type IN ('".implode("','", array_keys($GLOBALS['VIMEO_CACHE_REB
 
         // Check which elements are eligible for the cache rebuild
         foreach ($elements as $k => $v) {
-            $callback = $this->getCallbackInstance($v['type']);
+            $callback = static::getCallbackInstance($v['type']);
 
             if (!$callback->isEligible($v)) {
                 unset($elements[$k]);
@@ -196,7 +216,7 @@ WHERE tl_content.type IN ('".implode("','", array_keys($GLOBALS['VIMEO_CACHE_REB
      * @throws \InvalidArgumentException
      * @throws \RuntimeException
      */
-    protected function getCallbackInstance($type)
+    protected static function getCallbackInstance($type)
     {
         $className = $GLOBALS['VIMEO_CACHE_REBUILDER'][$type];
 
@@ -282,7 +302,7 @@ WHERE tl_content.type IN ('".implode("','", array_keys($GLOBALS['VIMEO_CACHE_REB
         }
 
         $dataProvider = $this->getBatchProvider();
-        $callback     = $this->getCallbackInstance($contentElement->type);
+        $callback     = static::getCallbackInstance($contentElement->type);
 
         if (!$callback->rebuild($dataProvider, $contentElement)) {
             header('HTTP/1.1 400 Bad Request');
@@ -315,7 +335,7 @@ WHERE tl_content.type IN ('".implode("','", array_keys($GLOBALS['VIMEO_CACHE_REB
      */
     public function rebuildElementCache(ContentModel $contentElement)
     {
-        $callback = $this->getCallbackInstance($contentElement->type);
+        $callback = static::getCallbackInstance($contentElement->type);
 
         if (!$callback->isEligible($contentElement->row())) {
             return null;

@@ -13,6 +13,10 @@
 
 namespace Derhaeuptling\VimeoApi\DataContainer;
 
+use Contao\BackendTemplate;
+use Contao\System;
+use Derhaeuptling\VimeoApi\Cache\Rebuilder;
+
 class UserContainer
 {
     /**
@@ -22,10 +26,17 @@ class UserContainer
      */
     public function generatePurgeField()
     {
-        return '<div class="w50">
-  <h3><label for="ctrl_name">'.$GLOBALS['TL_LANG']['tl_user']['vimeoRebuildLabel'][0].'</label></h3>
-  <a href="system/modules/vimeo_api/public/rebuild.php" class="tl_submit" style="margin:5px 0;" onclick="Backend.openModalIframe({\'width\':768,\'title\':\''.specialchars($GLOBALS['TL_LANG']['tl_user']['vimeoRebuildLabel'][0]).'\',\'url\':this.href});return false">'.specialchars($GLOBALS['TL_LANG']['tl_user']['vimeoRebuildButton']).'</a>
-  <p class="tl_help tl_tip">'.$GLOBALS['TL_LANG']['tl_user']['vimeoRebuildLabel'][1].'</p>
-</div>';
+        System::loadLanguageFile('tl_maintenance');
+
+        $template                = new BackendTemplate('be_vimeo_rebuilder_user');
+        $template->elementsCount = count(Rebuilder::getContentElements());
+
+        if (($stats = Rebuilder::generateStats()) !== null) {
+            foreach ($stats as $k => $v) {
+                $template->$k = $v;
+            }
+        }
+
+        return $template->parse();
     }
 }
