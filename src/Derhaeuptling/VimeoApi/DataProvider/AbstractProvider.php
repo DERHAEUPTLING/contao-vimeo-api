@@ -152,8 +152,11 @@ abstract class AbstractProvider
 
         // Apply the sorting
         if ($sorting) {
-            $params['sort']      = $sorting;
-            $params['direction'] = $direction;
+            $params['sort'] = $sorting;
+
+            if ($direction) {
+                $params['direction'] = $direction;
+            }
         }
 
         $albumVideosData = [];
