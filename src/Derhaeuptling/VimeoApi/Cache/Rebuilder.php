@@ -17,6 +17,7 @@ use Contao\Automator;
 use Contao\BackendTemplate;
 use Contao\Config;
 use Contao\ContentModel;
+use Contao\Controller;
 use Contao\Database;
 use Contao\Date;
 use Contao\Environment;
@@ -93,6 +94,11 @@ class Rebuilder implements \executable
 
         // Generate the elements
         if ($this->isActive()) {
+            // Redirect to the maintenance module if the rebuilder cannot be run
+            if (!$template->canRun) {
+                Controller::redirect('contao/main.php?do=maintenance');
+            }
+
             $elements = [];
 
             foreach ($elementsData as $data) {
