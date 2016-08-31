@@ -13,9 +13,7 @@
 
 namespace Derhaeuptling\VimeoApi\Model;
 
-use Contao\Model;
-
-class CacheModel extends Model
+class CacheModel extends \Model
 {
     /**
      * Table name
