@@ -58,10 +58,14 @@ class SingleRebuildProvider extends StandardProvider implements ProviderInterfac
         $cacheKey = 'album_video_'.$videoId;
 
         if (!$this->isRebuilt($cacheKey)) {
+            if (($albums = $this->getAlbums()) === null) {
+                return null;
+            }
+
             $albumData = [];
 
             // Find the video in the album
-            foreach ($this->getAlbums() as $album) {
+            foreach ($albums as $album) {
                 $albumId = $this->extractAlbumId($album);
 
                 foreach ($this->getAlbumVideos($albumId, null, null) as $video) {
