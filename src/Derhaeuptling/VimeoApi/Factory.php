@@ -48,10 +48,15 @@ class Factory
 
         $video = new Video($videoId, $videoData);
 
-        if ($includeAlbum
-            && ($albumData = $this->dataProvider->getAlbumByVideo($videoId)) !== null
-            && ($album = $this->createAlbum($this->dataProvider->extractAlbumId($albumData))) !== null
-        ) {
+        if ($includeAlbum) {
+            if (($albumData = $this->dataProvider->getAlbumByVideo($videoId)) === null) {
+                return null;
+            }
+
+            if (($album = $this->createAlbum($this->dataProvider->extractAlbumId($albumData))) === null) {
+                return null;
+            }
+
             $video->setAlbum($album);
         }
 
@@ -76,12 +81,11 @@ class Factory
 
         $videos = [];
 
-        if ($includeVideos && ($videosData = $this->dataProvider->getAlbumVideos(
-                $albumId,
-                $sorting,
-                $direction
-            )) !== null
-        ) {
+        if ($includeVideos) {
+            if (($videosData = $this->dataProvider->getAlbumVideos($albumId, $sorting, $direction)) === null) {
+                return null;
+            }
+
             foreach ($videosData as $videoData) {
                 if (($video = $this->createVideo($this->dataProvider->extractVideoId($videoData), false)) !== null) {
                     $videos[] = $video;
