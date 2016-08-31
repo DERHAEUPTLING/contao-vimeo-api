@@ -116,11 +116,7 @@ abstract class AbstractProvider
     {
         $data = $this->client->request('/videos/'.$videoId, ['fields' => implode(',', $this->videoFields)]);
 
-        if ($data['status'] !== 200) {
-            return null;
-        }
-
-        return $data['body'];
+        return ($data === null) ? null : $data['body'];
     }
 
     /**
@@ -134,11 +130,7 @@ abstract class AbstractProvider
     {
         $data = $this->client->request('/albums/'.$albumId, ['fields' => implode(',', $this->albumFields)]);
 
-        if ($data['status'] !== 200) {
-            return null;
-        }
-
-        return $data['body'];
+        return ($data === null) ? null : $data['body'];
     }
 
     /**
@@ -172,7 +164,7 @@ abstract class AbstractProvider
             // Reset the params as they will be appended to the next endpoint automatically by Vimeo
             $params = [];
 
-            if ($data['status'] !== 200) {
+            if ($data === null) {
                 return null;
             }
 
@@ -203,7 +195,7 @@ abstract class AbstractProvider
             // Reset the params as they will be appended to the next endpoint automatically by Vimeo
             $params = [];
 
-            if ($data['status'] !== 200) {
+            if ($data === null) {
                 return null;
             }
 
@@ -234,7 +226,7 @@ abstract class AbstractProvider
             // Reset the params as they will be appended to the next endpoint automatically by Vimeo
             $params = [];
 
-            if ($data['status'] !== 200) {
+            if ($data === null) {
                 return null;
             }
 
@@ -256,10 +248,6 @@ abstract class AbstractProvider
     {
         $data = $this->client->request('/videos/'.$videoId.'/pictures');
 
-        if ($data['status'] !== 200) {
-            return null;
-        }
-
-        return $data['body'];
+        return ($data === null) ? null : $data['body'];
     }
 }

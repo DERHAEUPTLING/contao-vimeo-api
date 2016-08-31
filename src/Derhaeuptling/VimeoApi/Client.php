@@ -9,6 +9,12 @@ use Vimeo\Vimeo;
 class Client extends Vimeo
 {
     /**
+     * The request limit
+     * @var int
+     */
+    protected $requestLimit = 100;
+
+    /**
      * Get the Vimeo client
      *
      * @param string $clientId
@@ -34,23 +40,28 @@ class Client extends Vimeo
      * @param string $method The HTTP Method of the request
      * @param bool   $json_body
      *
-     * @return array
+     * @return array|null
      */
     public function request($url, $params = array(), $method = 'GET', $json_body = true)
     {
-        // @todo @debug - start
-        System::log('Vimeo request to: '.$url, __METHOD__, TL_ERROR);
+        if (Config::get('debugMode')) {
+            static $requestCount = 0;
 
-        if (!$GLOBALS['TMP']) {
-            $GLOBALS['TMP'] = 0;
+            if (++$requestCount > $this->requestLimit) {
+                System::log(
+                    sprintf(
+                        'The request limit of %s has been reached. Please check your script for possible optimizations.',
+                        $this->requestLimit
+                    ),
+                    __METHOD__,
+                    'VIMEO'
+                );
+
+                return null;
+            }
+
+            System::log('Vimeo request to: '.$url, __METHOD__, 'VIMEO');
         }
-
-        $GLOBALS['TMP']++;
-
-        if ($GLOBALS['TMP'] > 100) {
-            die('request limit');
-        }
-        // @todo @debug - end
 
         try {
             $response = parent::request($url, $params, $method, $json_body);
@@ -61,8 +72,10 @@ class Client extends Vimeo
                 TL_ERROR
             );
 
-            return [];
+            return null;
         }
+
+        $this->updateStats($response['headers']);
 
         if ($response['status'] !== 200) {
             System::log(
@@ -70,10 +83,9 @@ class Client extends Vimeo
                 __METHOD__,
                 TL_ERROR
             );
-        }
 
-        // Update the stats
-        $this->updateStats($response['headers']);
+            return null;
+        }
 
         return $response;
     }
