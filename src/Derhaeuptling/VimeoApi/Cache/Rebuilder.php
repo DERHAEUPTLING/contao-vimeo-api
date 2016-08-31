@@ -302,14 +302,20 @@ WHERE tl_content.type IN ('".implode("','", array_keys($GLOBALS['VIMEO_CACHE_REB
      *
      * @param ContentModel $contentElement
      *
-     * @return bool
+     * @return bool|null
      *
      * @throws \InvalidArgumentException
      * @throws \RuntimeException
      */
     public function rebuildElementCache(ContentModel $contentElement)
     {
-        return $this->getCallbackInstance($contentElement->type)->rebuild(
+        $callback = $this->getCallbackInstance($contentElement->type);
+
+        if (!$callback->isEligible($contentElement->row())) {
+            return null;
+        }
+
+        return $callback->rebuild(
             new SingleRebuildProvider(new Cache(), Client::getInstance()),
             $contentElement
         );

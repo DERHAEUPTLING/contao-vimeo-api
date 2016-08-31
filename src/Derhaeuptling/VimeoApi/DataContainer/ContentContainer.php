@@ -44,9 +44,9 @@ class ContentContainer
             $result = false;
         }
 
-        if ($result) {
+        if ($result === true) {
             Message::addConfirmation($GLOBALS['TL_LANG']['tl_content']['vimeo_cacheConfirm']);
-        } else {
+        } elseif ($result === false) {
             Message::addError($GLOBALS['TL_LANG']['tl_content']['vimeo_cacheError']);
         }
     }

@@ -57,7 +57,7 @@ class AlbumHandler implements HandlerInterface
 
         /** @var Video $video */
         foreach ($album->getVideos() as $video) {
-            if (Config::get('vimeo_allImages') && $dataProvider->getVideoImages($video->getId()) !== null) {
+            if (Config::get('vimeo_allImages') && $dataProvider->getVideoImages($video->getId()) === null) {
                 return false;
             }
 

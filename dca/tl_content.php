@@ -15,7 +15,8 @@
  * Add global callbacks
  */
 $GLOBALS['TL_DCA']['tl_content']['config']['onsubmit_callback'][] = [
-    'Derhaeuptling\VimeoApi\DataContainer\ContentContainer', 'rebuildVimeoCache'
+    'Derhaeuptling\VimeoApi\DataContainer\ContentContainer',
+    'rebuildVimeoCache',
 ];
 
 /**
@@ -34,86 +35,86 @@ $GLOBALS['TL_DCA']['tl_content']['subpalettes']['vimeo_link']         = 'url,tit
  * Add fields
  */
 $GLOBALS['TL_DCA']['tl_content']['fields']['vimeo_albumId'] = [
-    'label'                   => &$GLOBALS['TL_LANG']['tl_content']['vimeo_albumId'],
-    'exclude'                 => true,
-    'inputType'               => 'text',
-    'eval'                    => array('mandatory'=>true, 'maxlength'=>32, 'tl_class'=>'w50'),
-    'sql'                     => "varchar(32) NOT NULL default ''"
+    'label'     => &$GLOBALS['TL_LANG']['tl_content']['vimeo_albumId'],
+    'exclude'   => true,
+    'inputType' => 'text',
+    'eval'      => array('mandatory' => true, 'maxlength' => 32, 'tl_class' => 'w50'),
+    'sql'       => "varchar(32) NOT NULL default ''",
 ];
 
 $GLOBALS['TL_DCA']['tl_content']['fields']['vimeo_videoId'] = [
-    'label'                   => &$GLOBALS['TL_LANG']['tl_content']['vimeo_videoId'],
-    'exclude'                 => true,
-    'inputType'               => 'text',
-    'eval'                    => array('mandatory'=>true, 'maxlength'=>32, 'tl_class'=>'w50'),
-    'sql'                     => "varchar(32) NOT NULL default ''"
+    'label'     => &$GLOBALS['TL_LANG']['tl_content']['vimeo_videoId'],
+    'exclude'   => true,
+    'inputType' => 'text',
+    'eval'      => array('mandatory' => true, 'maxlength' => 32, 'tl_class' => 'w50'),
+    'sql'       => "varchar(32) NOT NULL default ''",
 ];
 
 $GLOBALS['TL_DCA']['tl_content']['fields']['vimeo_customName'] = [
-    'label'                   => &$GLOBALS['TL_LANG']['tl_content']['vimeo_customName'],
-    'exclude'                 => true,
-    'inputType'               => 'text',
-    'eval'                    => array('maxlength'=>255, 'tl_class'=>'w50'),
-    'sql'                     => "varchar(255) NOT NULL default ''"
+    'label'     => &$GLOBALS['TL_LANG']['tl_content']['vimeo_customName'],
+    'exclude'   => true,
+    'inputType' => 'text',
+    'eval'      => array('maxlength' => 255, 'tl_class' => 'w50'),
+    'sql'       => "varchar(255) NOT NULL default ''",
 ];
 
 $GLOBALS['TL_DCA']['tl_content']['fields']['vimeo_lightbox'] = [
-    'label'                   => &$GLOBALS['TL_LANG']['tl_content']['vimeo_lightbox'],
-    'exclude'                 => true,
-    'inputType'               => 'checkbox',
-    'eval'                    => array('tl_class'=>'w50 m12'),
-    'sql'                     => "char(1) NOT NULL default ''"
+    'label'     => &$GLOBALS['TL_LANG']['tl_content']['vimeo_lightbox'],
+    'exclude'   => true,
+    'inputType' => 'checkbox',
+    'eval'      => array('tl_class' => 'w50 m12'),
+    'sql'       => "char(1) NOT NULL default ''",
 ];
 
 $GLOBALS['TL_DCA']['tl_content']['fields']['vimeo_lightbox'] = [
-    'label'                   => &$GLOBALS['TL_LANG']['tl_content']['vimeo_lightbox'],
-    'exclude'                 => true,
-    'inputType'               => 'checkbox',
-    'eval'                    => array('submitOnChange'=>true, 'tl_class'=>'clr'),
-    'sql'                     => "char(1) NOT NULL default ''"
+    'label'     => &$GLOBALS['TL_LANG']['tl_content']['vimeo_lightbox'],
+    'exclude'   => true,
+    'inputType' => 'checkbox',
+    'eval'      => array('submitOnChange' => true, 'tl_class' => 'clr'),
+    'sql'       => "char(1) NOT NULL default ''",
 ];
 
 $GLOBALS['TL_DCA']['tl_content']['fields']['vimeo_lightboxAutoplay'] = [
-    'label'                   => &$GLOBALS['TL_LANG']['tl_content']['vimeo_lightboxAutoplay'],
-    'exclude'                 => true,
-    'inputType'               => 'checkbox',
-    'eval'                    => array('tl_class'=>'clr'),
-    'sql'                     => "char(1) NOT NULL default ''"
+    'label'     => &$GLOBALS['TL_LANG']['tl_content']['vimeo_lightboxAutoplay'],
+    'exclude'   => true,
+    'inputType' => 'checkbox',
+    'eval'      => array('tl_class' => 'clr'),
+    'sql'       => "char(1) NOT NULL default ''",
 ];
 
 $GLOBALS['TL_DCA']['tl_content']['fields']['vimeo_link'] = [
-    'label'                   => &$GLOBALS['TL_LANG']['tl_content']['vimeo_link'],
-    'exclude'                 => true,
-    'inputType'               => 'checkbox',
-    'eval'                    => array('submitOnChange'=>true, 'tl_class'=>'clr'),
-    'sql'                     => "char(1) NOT NULL default ''"
+    'label'     => &$GLOBALS['TL_LANG']['tl_content']['vimeo_link'],
+    'exclude'   => true,
+    'inputType' => 'checkbox',
+    'eval'      => array('submitOnChange' => true, 'tl_class' => 'clr'),
+    'sql'       => "char(1) NOT NULL default ''",
 ];
 
 $GLOBALS['TL_DCA']['tl_content']['fields']['vimeo_customPoster'] = [
-    'label'                   => &$GLOBALS['TL_LANG']['tl_content']['vimeo_customPoster'],
-    'exclude'                 => true,
-    'inputType'               => 'checkbox',
-    'eval'                    => array('submitOnChange'=>true, 'tl_class'=>'clr'),
-    'sql'                     => "char(1) NOT NULL default ''"
+    'label'     => &$GLOBALS['TL_LANG']['tl_content']['vimeo_customPoster'],
+    'exclude'   => true,
+    'inputType' => 'checkbox',
+    'eval'      => array('submitOnChange' => true, 'tl_class' => 'clr'),
+    'sql'       => "char(1) NOT NULL default ''",
 ];
 
 $GLOBALS['TL_DCA']['tl_content']['fields']['vimeo_template'] = [
-    'label'                   => &$GLOBALS['TL_LANG']['tl_content']['vimeo_template'],
-    'default'                 => 'vimeo_default',
-    'exclude'                 => true,
-    'inputType'               => 'select',
-    'options_callback'        => function () {
+    'label'            => &$GLOBALS['TL_LANG']['tl_content']['vimeo_template'],
+    'default'          => 'vimeo_default',
+    'exclude'          => true,
+    'inputType'        => 'select',
+    'options_callback' => function () {
         return \Controller::getTemplateGroup('vimeo_');
     },
-    'eval'                    => array('chosen'=>true, 'tl_class'=>'w50'),
-    'sql'                     => "varchar(128) NOT NULL default ''"
+    'eval'             => array('chosen' => true, 'tl_class' => 'w50'),
+    'sql'              => "varchar(128) NOT NULL default ''",
 ];
 
 $GLOBALS['TL_DCA']['tl_content']['fields']['vimeo_sorting'] = [
-    'label'                   => &$GLOBALS['TL_LANG']['tl_content']['vimeo_sorting'],
-    'exclude'                 => true,
-    'inputType'               => 'select',
-    'options'                 => [
+    'label'     => &$GLOBALS['TL_LANG']['tl_content']['vimeo_sorting'],
+    'exclude'   => true,
+    'inputType' => 'select',
+    'options'   => [
         'manual',
         'date',
         'alphabetical',
@@ -123,25 +124,25 @@ $GLOBALS['TL_DCA']['tl_content']['fields']['vimeo_sorting'] = [
         'duration',
         'modified_time',
     ],
-    'reference'               => &$GLOBALS['TL_LANG']['tl_content']['vimeo_sorting'],
-    'eval'                    => array(
+    'reference' => &$GLOBALS['TL_LANG']['tl_content']['vimeo_sorting'],
+    'eval'      => array(
         'includeBlankOption' => true,
         'blankOptionLabel'   => &$GLOBALS['TL_LANG']['tl_content']['vimeo_sorting']['blank'],
         'tl_class'           => 'w50',
     ),
-    'sql'                     => "varchar(13) NOT NULL default ''"
+    'sql'       => "varchar(13) NOT NULL default ''",
 ];
 
 $GLOBALS['TL_DCA']['tl_content']['fields']['vimeo_sortingDirection'] = [
-    'label'                   => &$GLOBALS['TL_LANG']['tl_content']['vimeo_sortingDirection'],
-    'exclude'                 => true,
-    'inputType'               => 'select',
-    'options'                 => ['asc', 'desc'],
-    'reference'               => &$GLOBALS['TL_LANG']['tl_content']['vimeo_sortingDirection'],
-    'eval'                    => array(
+    'label'     => &$GLOBALS['TL_LANG']['tl_content']['vimeo_sortingDirection'],
+    'exclude'   => true,
+    'inputType' => 'select',
+    'options'   => ['asc', 'desc'],
+    'reference' => &$GLOBALS['TL_LANG']['tl_content']['vimeo_sortingDirection'],
+    'eval'      => [
         'includeBlankOption' => true,
         'blankOptionLabel'   => &$GLOBALS['TL_LANG']['tl_content']['vimeo_sortingDirection']['blank'],
         'tl_class'           => 'w50',
-    ),
-    'sql'                     => "varchar(4) NOT NULL default ''"
+    ],
+    'sql'       => "varchar(4) NOT NULL default ''",
 ];

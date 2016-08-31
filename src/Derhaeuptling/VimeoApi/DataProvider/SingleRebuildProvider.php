@@ -33,13 +33,13 @@ class SingleRebuildProvider extends StandardProvider implements ProviderInterfac
         $videoId  = (int)$videoId;
         $cacheKey = 'video_'.$videoId;
 
-        if (!in_array($cacheKey, $this->rebuilt, true)) {
+        if (!$this->isRebuilt($cacheKey)) {
             if (($video = $this->fetchVideo($videoId)) === null) {
                 return null;
             }
 
             $this->cache->setData($cacheKey, $video);
-            $this->rebuilt[] = $cacheKey;
+            $this->setRebuilt($cacheKey);
         }
 
         return parent::getVideo($videoId);
@@ -57,7 +57,7 @@ class SingleRebuildProvider extends StandardProvider implements ProviderInterfac
         $videoId  = (int)$videoId;
         $cacheKey = 'album_video_'.$videoId;
 
-        if (!in_array($cacheKey, $this->rebuilt, true)) {
+        if (!$this->isRebuilt($cacheKey)) {
             $albumData = [];
 
             // Find the video in the album
@@ -75,7 +75,7 @@ class SingleRebuildProvider extends StandardProvider implements ProviderInterfac
 
             // Set the reference to album data
             $this->cache->setReference($cacheKey, 'album_'.$this->extractAlbumId($albumData));
-            $this->rebuilt[] = $cacheKey;
+            $this->setRebuilt($cacheKey);
         }
 
         return parent::getAlbumByVideo($videoId);
@@ -90,7 +90,7 @@ class SingleRebuildProvider extends StandardProvider implements ProviderInterfac
     {
         $cacheKey = 'albums';
 
-        if (!in_array($cacheKey, $this->rebuilt, true)) {
+        if (!$this->isRebuilt($cacheKey)) {
             if (($albums = $this->fetchAlbums()) === null) {
                 return null;
             }
@@ -109,7 +109,7 @@ class SingleRebuildProvider extends StandardProvider implements ProviderInterfac
                 }
 
                 $this->cache->setData($key, $album);
-                $this->rebuilt[] = $key;
+                $this->setRebuilt($key);
 
                 // Get the album videos only if the album has been not cached yet or has been modified since last time
                 if ($cachedAlbum === null || $cachedAlbum['modified_time'] !== $album['modified_time']) {
@@ -118,11 +118,11 @@ class SingleRebuildProvider extends StandardProvider implements ProviderInterfac
 
                 // Mark the videos as rebuilt
                 foreach ($this->getAlbumVideos($albumId) as $video) {
-                    $this->rebuilt[] = 'video_'.$this->extractVideoId($video);
+                    $this->setRebuilt('video_'.$this->extractVideoId($video));
                 }
             }
 
-            $this->rebuilt[] = $cacheKey;
+            $this->setRebuilt($cacheKey);
         }
 
         return parent::getAlbums();
@@ -140,7 +140,7 @@ class SingleRebuildProvider extends StandardProvider implements ProviderInterfac
         $albumId  = (int)$albumId;
         $cacheKey = 'album_'.$albumId;
 
-        if (!in_array($cacheKey, $this->rebuilt, true)) {
+        if (!$this->isRebuilt($cacheKey)) {
             if (($albumData = $this->fetchAlbum($albumId)) === null) {
                 return null;
             }
@@ -153,6 +153,7 @@ class SingleRebuildProvider extends StandardProvider implements ProviderInterfac
             }
 
             $this->cache->setData($cacheKey, $albumData);
+            $this->setRebuilt($cacheKey);
 
             // Get the album videos only if the album has been not cached yet or has been modified since last time
             if ($cachedAlbum === null || $cachedAlbum['modified_time'] !== $albumData['modified_time']) {
@@ -161,10 +162,8 @@ class SingleRebuildProvider extends StandardProvider implements ProviderInterfac
 
             // Mark the videos as rebuilt
             foreach ($this->getAlbumVideos($albumId) as $video) {
-                $this->rebuilt[] = 'video_'.$this->extractVideoId($video);
+                $this->setRebuilt('video_'.$this->extractVideoId($video));
             }
-
-            $this->rebuilt[] = $cacheKey;
         }
 
         return parent::getAlbum($albumId);
@@ -184,7 +183,7 @@ class SingleRebuildProvider extends StandardProvider implements ProviderInterfac
         $albumId  = (int)$albumId;
         $cacheKey = 'album_videos_'.$albumId.($sorting ? ('_'.$sorting) : '').($direction ? ('_'.$direction) : '');
 
-        if (!in_array($cacheKey, $this->rebuilt, true)) {
+        if (!$this->isRebuilt($cacheKey)) {
             if (($albumVideosData = $this->fetchAlbumVideos($albumId, $sorting, $direction)) === null) {
                 return null;
             }
@@ -195,7 +194,7 @@ class SingleRebuildProvider extends StandardProvider implements ProviderInterfac
                 $key     = 'video_'.$videoId;
 
                 $this->cache->setData($key, $video);
-                $this->rebuilt[] = $key;
+                $this->setRebuilt($key);
 
                 // Also set album by video data
                 if (($albumData = $this->getAlbum($albumId)) !== null) {
@@ -204,7 +203,7 @@ class SingleRebuildProvider extends StandardProvider implements ProviderInterfac
             }
 
             $this->cache->setData($cacheKey, $albumVideosData);
-            $this->rebuilt[] = $cacheKey;
+            $this->setRebuilt($cacheKey);
         }
     }
 
@@ -224,13 +223,13 @@ class SingleRebuildProvider extends StandardProvider implements ProviderInterfac
         $index    = (int)$index;
         $cacheKey = 'video_'.$videoId.'_'.$index;
 
-        if (!in_array($cacheKey, $this->rebuilt, true)) {
+        if (!$this->isRebuilt($cacheKey)) {
             if (($image = $this->fetchVideoImage($videoId, $index)) === null) {
                 return null;
             }
 
             $this->cache->setImage($cacheKey, $image);
-            $this->rebuilt[] = $cacheKey;
+            $this->setRebuilt($cacheKey);
         }
 
         return parent::getVideoImage($videoId, $index);
@@ -248,15 +247,37 @@ class SingleRebuildProvider extends StandardProvider implements ProviderInterfac
         $videoId  = (int)$videoId;
         $cacheKey = 'video_images_'.$videoId;
 
-        if (!in_array($cacheKey, $this->rebuilt, true)) {
+        if (!$this->isRebuilt($cacheKey)) {
             if (($images = $this->fetchVideoImages($videoId)) === null) {
                 return null;
             }
 
             $this->cache->setData($cacheKey, $images);
-            $this->rebuilt[] = $cacheKey;
+            $this->setRebuilt($cacheKey);
         }
 
         return parent::getVideoImages($videoId);
+    }
+
+    /**
+     * Check if the cache key is rebuilt
+     *
+     * @param string $cacheKey
+     *
+     * @return bool
+     */
+    protected function isRebuilt($cacheKey)
+    {
+        return in_array($cacheKey, $this->rebuilt, true);
+    }
+
+    /**
+     * Set the cache key as rebuilt
+     *
+     * @param string $cacheKey
+     */
+    protected function setRebuilt($cacheKey)
+    {
+        $this->rebuilt[] = $cacheKey;
     }
 }

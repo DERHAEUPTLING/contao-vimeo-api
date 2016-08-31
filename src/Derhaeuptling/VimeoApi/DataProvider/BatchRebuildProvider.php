@@ -13,6 +13,8 @@
 
 namespace Derhaeuptling\VimeoApi\DataProvider;
 
+use Contao\Config;
+
 class BatchRebuildProvider extends StandardProvider implements ProviderInterface
 {
     /**
@@ -83,10 +85,7 @@ class BatchRebuildProvider extends StandardProvider implements ProviderInterface
 
             // Get the video images only if the video has been not cached yet or has been modified since last time
             if ($cachedVideo === null || $cachedVideo['modified_time'] !== $video['modified_time']) {
-                $this->getVideoImages($videoId);
-            } else {
-                // Mark the data as non obsolete so it does not get refreshed anymore
-                $this->cache->markDataNonObsolete('video_images_'.$videoId);
+                $this->getVideoImage($videoId, Config::get('vimeo_imageIndex'));
             }
         }
     }
