@@ -78,7 +78,13 @@ class SingleRebuildProvider extends StandardProvider implements ProviderInterfac
             }
 
             // Set the reference to album data
-            $this->cache->setReference($cacheKey, 'album_'.$this->extractAlbumId($albumData));
+            if (count($albumData) > 0) {
+                $this->cache->setReference($cacheKey, 'album_'.$this->extractAlbumId($albumData));
+            } else {
+                // If the video has no album then just set an empty array
+                $this->cache->setData($cacheKey, $albumData);
+            }
+
             $this->setRebuilt($cacheKey);
         }
 

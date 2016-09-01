@@ -53,11 +53,14 @@ class Factory
                 return null;
             }
 
-            if (($album = $this->createAlbum($this->dataProvider->extractAlbumId($albumData))) === null) {
-                return null;
-            }
+            // Get the album data if video has an album
+            if (count($albumData) > 0) {
+                if (($album = $this->createAlbum($this->dataProvider->extractAlbumId($albumData))) === null) {
+                    return null;
+                }
 
-            $video->setAlbum($album);
+                $video->setAlbum($album);
+            }
         }
 
         return $video;
