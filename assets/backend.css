@@ -13,6 +13,10 @@
     background-color: transparent;
 }
 
+#tl_maintenance_vimeo .tl_listing {
+    margin-bottom: 16px !important;
+}
+
 #tl_vimeo_rebuild {
     padding: 0 18px 18px;
     line-height: 1.5;

@@ -11,20 +11,25 @@
  * @license LGPL
  */
 
-namespace Derhaeuptling\VimeoApi\Maintenance;
+namespace Derhaeuptling\VimeoApi\Cache;
 
 use Contao\Automator;
 use Contao\BackendTemplate;
 use Contao\Config;
 use Contao\ContentModel;
+use Contao\Controller;
 use Contao\Database;
+use Contao\Date;
 use Contao\Environment;
 use Contao\Input;
 use Contao\System;
-use Derhaeuptling\VimeoApi\VimeoApi;
-use Derhaeuptling\VimeoApi\VimeoVideo;
+use Derhaeuptling\VimeoApi\Cache\Handler\HandlerInterface;
+use Derhaeuptling\VimeoApi\Client;
+use Derhaeuptling\VimeoApi\DataProvider\BatchRebuildProvider;
+use Derhaeuptling\VimeoApi\DataProvider\SingleRebuildProvider;
+use Derhaeuptling\VimeoApi\Stats;
 
-class CacheRebuilder implements \executable
+class Rebuilder implements \executable
 {
     /**
      * Ajax action name
@@ -74,9 +79,22 @@ class CacheRebuilder implements \executable
         $template->action        = ampersand(Environment::get('request'));
         $template->isActive      = $this->isActive();
         $template->elementsCount = count($elementsData);
+        $template->canRun        = true;
+
+        // Add the stats data
+        if (($stats = static::generateStats()) !== null) {
+            foreach ($stats as $k => $v) {
+                $template->$k = $v;
+            }
+        }
 
         // Generate the elements
         if ($this->isActive()) {
+            // Redirect to the maintenance module if the rebuilder cannot be run
+            if (!$template->canRun) {
+                Controller::redirect('contao/main.php?do=maintenance');
+            }
+
             $elements = [];
 
             foreach ($elementsData as $data) {
@@ -118,19 +136,44 @@ class CacheRebuilder implements \executable
     }
 
     /**
+     * Generate the stats data
+     *
+     * @return array|null
+     */
+    public static function generateStats()
+    {
+        if (!Stats::hasData()) {
+            return null;
+        }
+
+        $totalLimit   = Stats::get(Stats::TOTAL_LIMIT);
+        $resetTime    = Stats::get(Stats::LIMIT_RESET_TIME);
+        $limitReset   = $resetTime < time();
+        $currentLimit = $limitReset ? $totalLimit : Stats::get(Stats::CURRENT_LIMIT);
+
+        return [
+            'totalLimit'   => $totalLimit,
+            'currentLimit' => $currentLimit,
+            'limitReset'   => $limitReset ? '' : Date::parse(Config::get('datimFormat'), $resetTime),
+            'canRun'       => $currentLimit > 0 || $limitReset,
+        ];
+    }
+
+    /**
      * Get the content elements
      *
      * @return array
      *
      * @throws \RuntimeException
      */
-    protected function getContentElements()
+    public static function getContentElements()
     {
         if (!is_array($GLOBALS['VIMEO_CACHE_REBUILDER']) || count($GLOBALS['VIMEO_CACHE_REBUILDER']) < 1) {
             return [];
         }
 
-        $elements = Database::getInstance()->execute("
+        $elements = Database::getInstance()->execute(
+            "
 SELECT
 tl_content.*,
 tl_article.title AS _article,
@@ -147,12 +190,13 @@ LEFT JOIN tl_news_archive ON tl_news_archive.id=tl_news.pid
 LEFT JOIN tl_calendar_events ON tl_calendar_events.id=tl_content.pid AND tl_content.ptable='tl_calendar_events'
 LEFT JOIN tl_calendar ON tl_calendar.id=tl_calendar_events.pid
 WHERE tl_content.type IN ('".implode("','", array_keys($GLOBALS['VIMEO_CACHE_REBUILDER']))."')
-")
+"
+        )
             ->fetchAllAssoc();
 
         // Check which elements are eligible for the cache rebuild
         foreach ($elements as $k => $v) {
-            $callback = $this->getCallbackInstance($v['type']);
+            $callback = static::getCallbackInstance($v['type']);
 
             if (!$callback->isEligible($v)) {
                 unset($elements[$k]);
@@ -167,12 +211,12 @@ WHERE tl_content.type IN ('".implode("','", array_keys($GLOBALS['VIMEO_CACHE_REB
      *
      * @param string $type
      *
-     * @return CacheRebuildInterface
+     * @return HandlerInterface
      *
      * @throws \InvalidArgumentException
      * @throws \RuntimeException
      */
-    protected function getCallbackInstance($type)
+    protected static function getCallbackInstance($type)
     {
         $className = $GLOBALS['VIMEO_CACHE_REBUILDER'][$type];
 
@@ -182,12 +226,12 @@ WHERE tl_content.type IN ('".implode("','", array_keys($GLOBALS['VIMEO_CACHE_REB
             );
         }
 
-        /** @var CacheRebuildInterface $class */
+        /** @var HandlerInterface $class */
         $class = new $className;
 
-        if (!($class instanceof CacheRebuildInterface)) {
+        if (!($class instanceof HandlerInterface)) {
             throw new \RuntimeException(
-                sprintf('The class %s must implement the CacheRebuildInterface interface', $className)
+                sprintf('The class %s must implement the HandlerInterface interface', $className)
             );
         }
 
@@ -199,27 +243,41 @@ WHERE tl_content.type IN ('".implode("','", array_keys($GLOBALS['VIMEO_CACHE_REB
      *
      * @param string $action
      */
-    public function rebuildCache($action)
+    public function rebuild($action)
     {
         if ($action !== $this->ajaxAction) {
             return;
         }
 
         switch (Input::post('cache')) {
-            case 'page':
-                $this->rebuildPageCache();
+            case 'init':
+                $this->handleInitAction();
                 break;
 
-            case 'vimeo':
-                $this->rebuildVimeoCache();
+            case 'page':
+                $this->handlePageAction();
+                break;
+
+            case 'element':
+                $this->handleElementAction();
                 break;
         }
     }
 
     /**
-     * Rebuild the page cache
+     * Handle the init AJAX action
      */
-    protected function rebuildPageCache()
+    protected function handleInitAction()
+    {
+        $this->getBatchProvider()->init();
+        header('HTTP/1.1 200 OK');
+        die('OK');
+    }
+
+    /**
+     * Handle the page AJAX action
+     */
+    protected function handlePageAction()
     {
         $automator = new Automator();
         $automator->purgePageCache();
@@ -229,12 +287,12 @@ WHERE tl_content.type IN ('".implode("','", array_keys($GLOBALS['VIMEO_CACHE_REB
     }
 
     /**
-     * Rebuild the Vimeo cache
+     * Handle the element AJAX action
      *
      * @throws \InvalidArgumentException
      * @throws \RuntimeException
      */
-    protected function rebuildVimeoCache()
+    protected function handleElementAction()
     {
         // Throw an error if content element could not be found
         if (($contentElement = ContentModel::findByPk(Input::post('id'))) === null) {
@@ -243,10 +301,10 @@ WHERE tl_content.type IN ('".implode("','", array_keys($GLOBALS['VIMEO_CACHE_REB
             die('Bad Request');
         }
 
-        $api      = new VimeoApi(new ClearCache());
-        $callback = $this->getCallbackInstance($contentElement->type);
+        $dataProvider = $this->getBatchProvider();
+        $callback     = static::getCallbackInstance($contentElement->type);
 
-        if (!$callback->rebuild($api, $contentElement)) {
+        if (!$callback->rebuild($dataProvider, $contentElement)) {
             header('HTTP/1.1 400 Bad Request');
             die('Bad Request');
         }
@@ -256,20 +314,36 @@ WHERE tl_content.type IN ('".implode("','", array_keys($GLOBALS['VIMEO_CACHE_REB
     }
 
     /**
-     * Rebuild the element cache
+     * Return the get batch provider instance
+     *
+     * @return BatchRebuildProvider
+     */
+    protected function getBatchProvider()
+    {
+        return new BatchRebuildProvider(new Cache(), Client::getInstance());
+    }
+
+    /**
+     * Rebuild the content element cache
      *
      * @param ContentModel $contentElement
      *
-     * @return bool
+     * @return bool|null
      *
      * @throws \InvalidArgumentException
      * @throws \RuntimeException
      */
     public function rebuildElementCache(ContentModel $contentElement)
     {
-        $api      = new VimeoApi(new ClearCache());
-        $callback = $this->getCallbackInstance($contentElement->type);
+        $callback = static::getCallbackInstance($contentElement->type);
 
-        return $callback->rebuild($api, $contentElement);
+        if (!$callback->isEligible($contentElement->row())) {
+            return null;
+        }
+
+        return $callback->rebuild(
+            new SingleRebuildProvider(new Cache(), Client::getInstance()),
+            $contentElement
+        );
     }
 }

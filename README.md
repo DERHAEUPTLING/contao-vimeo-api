@@ -34,3 +34,7 @@ Contrary to the clearing/purging the Vimeo cache it will not delete the cache bu
 ## Displaying private videos
 
 To display the Vimeo private videos, make sure that your access token has ```private``` scope enabled. You may also need to refine the settings of the video itself, allowing it to be displayed on desired websites.
+
+## Upgrade from 1.x to 2.x
+
+After installing the new version of the extension make sure to **purge** the Vimeo cache. This will delete the obsolete files. Then you should batch **rebuild** the whole cache again.

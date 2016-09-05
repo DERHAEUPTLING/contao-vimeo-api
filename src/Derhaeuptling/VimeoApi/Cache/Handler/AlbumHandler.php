@@ -11,14 +11,15 @@
  * @license LGPL
  */
 
-namespace Derhaeuptling\VimeoApi\Maintenance;
+namespace Derhaeuptling\VimeoApi\Cache\Handler;
 
 use Contao\Config;
 use Contao\ContentModel;
-use Derhaeuptling\VimeoApi\VimeoApi;
-use Derhaeuptling\VimeoApi\VimeoVideo;
+use Derhaeuptling\VimeoApi\DataProvider\ProviderInterface;
+use Derhaeuptling\VimeoApi\Factory;
+use Derhaeuptling\VimeoApi\Video;
 
-class AlbumCacheRebuilder implements CacheRebuildInterface
+class AlbumHandler implements HandlerInterface
 {
     /**
      * Return true if the element is eligible for rebuild
@@ -35,33 +36,34 @@ class AlbumCacheRebuilder implements CacheRebuildInterface
     /**
      * Rebuild the cache and return true on success, false otherwise
      *
-     * @param VimeoApi     $api
-     * @param ContentModel $contentElement
+     * @param ProviderInterface $dataProvider
+     * @param ContentModel      $contentElement
      *
      * @return bool
      */
-    public function rebuild(VimeoApi $api, ContentModel $contentElement)
+    public function rebuild(ProviderInterface $dataProvider, ContentModel $contentElement)
     {
-        $client = $api->getClient();
-
-        if (($album = $api->getAlbum($client, $contentElement->vimeo_albumId)) === null) {
-            return false;
-        }
-
-        /** @var VimeoVideo $video */
-        foreach ($api->getAlbumVideos(
-            $client,
+        $factory = new Factory($dataProvider);
+        $album   = $factory->createAlbum(
             $contentElement->vimeo_albumId,
             true,
             $contentElement->vimeo_sorting,
             $contentElement->vimeo_sortingDirection
-        ) as $video) {
-            if (($image = $api->getVideoImage($client, $video->getId(), Config::get('vimeo_imageIndex'))) === null) {
+        );
+
+        if ($album === null) {
+            return false;
+        }
+
+        /** @var Video $video */
+        foreach ($album->getVideos() as $video) {
+            if (Config::get('vimeo_allImages') && $dataProvider->getVideoImages($video->getId()) === null) {
                 return false;
             }
 
-            $video->setPicturesData($image);
-            $video->downloadPoster();
+            if ($dataProvider->getVideoImage($video->getId(), Config::get('vimeo_imageIndex')) === null) {
+                return false;
+            }
         }
 
         return true;

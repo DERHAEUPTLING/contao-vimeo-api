@@ -15,9 +15,13 @@ namespace Derhaeuptling\VimeoApi\ContentElement;
 
 use Contao\Config;
 use Contao\ContentElement;
+use Contao\FilesModel;
 use Contao\FrontendTemplate;
-use Derhaeuptling\VimeoApi\VimeoApi;
-use Derhaeuptling\VimeoApi\VideoCache;
+use Derhaeuptling\VimeoApi\Cache\Cache;
+use Derhaeuptling\VimeoApi\Client;
+use Derhaeuptling\VimeoApi\DataProvider\StandardProvider;
+use Derhaeuptling\VimeoApi\Factory;
+use Derhaeuptling\VimeoApi\Video;
 
 class VideoElement extends ContentElement
 {
@@ -39,8 +43,8 @@ class VideoElement extends ContentElement
         }
 
         // Generate the backend buffer
-        if (TL_MODE == 'BE') {
-            $buffer = '<p><a href="https://vimeo.com/' . $this->vimeo_videoId . '" target="_blank">https://vimeo.com/' . $this->vimeo_videoId . '</a>';
+        if (TL_MODE === 'BE') {
+            $buffer = '<p><a href="https://vimeo.com/'.$this->vimeo_videoId.'" target="_blank">https://vimeo.com/'.$this->vimeo_videoId.'</a>';
 
             // Display the hint that the video is linked to URL
             if ($this->vimeo_link) {
@@ -91,9 +95,9 @@ class VideoElement extends ContentElement
 
         // Set a custom poster
         if ($this->vimeo_customPoster) {
-            $fileModel = \FilesModel::findByPk($this->singleSRC);
+            $fileModel = FilesModel::findByPk($this->singleSRC);
 
-            if ($fileModel !== null && is_file(TL_ROOT . '/' . $fileModel->path)) {
+            if ($fileModel !== null && is_file(TL_ROOT.'/'.$fileModel->path)) {
                 $video->setPoster($fileModel->path);
             }
         }
@@ -104,17 +108,25 @@ class VideoElement extends ContentElement
     /**
      * Get the video
      *
-     * @return \Derhaeuptling\VimeoApi\VimeoVideo|null
+     * @return Video|null
      */
     protected function getVideo()
     {
-        $api    = new VimeoApi(new VideoCache());
-        $client = $api->getClient();
+        $dataProvider = new StandardProvider(new Cache(), Client::getInstance());
+        $factory      = new Factory($dataProvider);
 
-        if (($video = $api->getVideo($client, $this->vimeo_videoId)) !== null
-            && ($image = $api->getVideoImage($client, $this->vimeo_videoId, Config::get('vimeo_imageIndex'))) !== null
-        ) {
-            $video->setPicturesData($image);
+        if (($video = $factory->createVideo($this->vimeo_videoId)) === null) {
+            return null;
+        }
+
+        // Set the images
+        if (Config::get('vimeo_allImages') && ($images = $dataProvider->getVideoImages($this->vimeo_videoId)) !== null) {
+            $video->setPicturesData($images);
+        }
+
+        // Set the poster
+        if (($image = $dataProvider->getVideoImage($this->vimeo_videoId, Config::get('vimeo_imageIndex'))) !== null) {
+            $video->setPoster($image);
         }
 
         return $video;

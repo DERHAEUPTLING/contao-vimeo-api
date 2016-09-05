@@ -11,13 +11,14 @@
  * @license LGPL
  */
 
-namespace Derhaeuptling\VimeoApi\Maintenance;
+namespace Derhaeuptling\VimeoApi\Cache\Handler;
 
 use Contao\Config;
 use Contao\ContentModel;
-use Derhaeuptling\VimeoApi\VimeoApi;
+use Derhaeuptling\VimeoApi\DataProvider\ProviderInterface;
+use Derhaeuptling\VimeoApi\Factory;
 
-class VideoCacheRebuilder implements CacheRebuildInterface
+class VideoHandler implements HandlerInterface
 {
     /**
      * Return true if the element is eligible for rebuild
@@ -34,25 +35,26 @@ class VideoCacheRebuilder implements CacheRebuildInterface
     /**
      * Rebuild the cache and return true on success, false otherwise
      *
-     * @param VimeoApi     $api
-     * @param ContentModel $contentElement
+     * @param ProviderInterface $dataProvider
+     * @param ContentModel      $contentElement
      *
      * @return bool
      */
-    public function rebuild(VimeoApi $api, ContentModel $contentElement)
+    public function rebuild(ProviderInterface $dataProvider, ContentModel $contentElement)
     {
-        $client = $api->getClient();
+        $factory = new Factory($dataProvider);
 
-        if (($video = $api->getVideo($client, $contentElement->vimeo_videoId)) === null) {
+        if (($video = $factory->createVideo($contentElement->vimeo_videoId)) === null) {
             return false;
         }
 
-        if (($image = $api->getVideoImage($client, $video->getId(), Config::get('vimeo_imageIndex'))) === null) {
+        if (Config::get('vimeo_allImages') && $dataProvider->getVideoImages($contentElement->vimeo_videoId) === null) {
             return false;
         }
 
-        $video->setPicturesData($image);
-        $video->downloadPoster();
+        if ($dataProvider->getVideoImage($contentElement->vimeo_videoId, Config::get('vimeo_imageIndex')) === null) {
+            return false;
+        }
 
         return true;
     }

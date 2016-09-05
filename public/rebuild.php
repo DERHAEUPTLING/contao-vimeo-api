@@ -33,5 +33,5 @@ if (file_exists('../../../initialize.php')) {
 }
 
 // Run the controller
-$controller = new \Derhaeuptling\VimeoApi\Maintenance\CacheRebuilderPopup();
+$controller = new \Derhaeuptling\VimeoApi\Cache\RebuilderPopup();
 $controller->run();

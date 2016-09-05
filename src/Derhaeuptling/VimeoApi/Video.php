@@ -15,17 +15,9 @@ namespace Derhaeuptling\VimeoApi;
 
 use Contao\Controller;
 use Contao\FrontendTemplate;
-use Contao\Request;
-use Contao\System;
 
-class VimeoVideo
+class Video
 {
-    /**
-     * Cache
-     * @var VideoCache
-     */
-    protected $cache;
-
     /**
      * Video ID
      * @var string
@@ -39,10 +31,10 @@ class VimeoVideo
     protected $data = [];
 
     /**
-     * Album data
-     * @var array
+     * Album
+     * @var Album
      */
-    protected $album = [];
+    protected $album;
 
     /**
      * Custom name
@@ -99,23 +91,37 @@ class VimeoVideo
     protected $linkTitle;
 
     /**
-     * Images folder
-     * @var string
+     * Video constructor.
+     *
+     * @param string $id
+     * @param array  $data
      */
-    protected $imagesFolder = 'system/vimeo/images';
+    public function __construct($id, array $data)
+    {
+        $this->id   = $id;
+        $this->data = $data;
+    }
 
     /**
-     * VimeoVideo constructor.
+     * Get the data property
      *
-     * @param string     $id
-     * @param array      $data
-     * @param VideoCache $cache
+     * @param string $key
+     *
+     * @return mixed
      */
-    public function __construct($id, array $data, VideoCache $cache)
+    public function get($key)
     {
-        $this->id    = $id;
-        $this->data  = $data;
-        $this->cache = $cache;
+        return $this->data[$key];
+    }
+
+    /**
+     * Get the data
+     *
+     * @return array
+     */
+    public function getData()
+    {
+        return $this->data;
     }
 
     /**
@@ -129,11 +135,11 @@ class VimeoVideo
     }
 
     /**
-     * Set the album data
+     * Set the album
      *
-     * @param array $album
+     * @param Album $album
      */
-    public function setAlbum(array $album)
+    public function setAlbum(Album $album)
     {
         $this->album = $album;
     }
@@ -145,7 +151,7 @@ class VimeoVideo
      */
     public function setPoster($path)
     {
-        if (!is_file(TL_ROOT . '/' . $path)) {
+        if (!is_file(TL_ROOT.'/'.$path)) {
             throw new \InvalidArgumentException(sprintf('The file "%s" does not exist', $path));
         }
 
@@ -159,10 +165,6 @@ class VimeoVideo
      */
     public function getPoster()
     {
-        if ($this->poster === null) {
-            $this->poster = $this->downloadPoster();
-        }
-
         return $this->poster;
     }
 
@@ -342,46 +344,22 @@ class VimeoVideo
             $template->linkTitle    = $this->linkTitle;
         }
 
-        $posterHelper = new \stdClass();
-        Controller::addImageToTemplate($posterHelper, [
-            'singleSRC' => $this->getPoster(),
-            'size'      => $this->posterSize,
-        ]);
+        // Add poster
+        if ($this->poster !== null) {
+            $posterHelper = new \stdClass();
+
+            Controller::addImageToTemplate(
+                $posterHelper,
+                [
+                    'singleSRC' => $this->poster,
+                    'size'      => $this->posterSize,
+                ]
+            );
+
+            $template->poster = $posterHelper;
+        }
 
         $template->customName = $this->customName;
-        $template->album      = $this->album;
-        $template->poster     = $posterHelper;
-    }
-
-    /**
-     * Download the poster and return the local path to it
-     *
-     * @return string
-     */
-    public function downloadPoster()
-    {
-        if (!is_array($this->data['pictures']['sizes'])) {
-            return '';
-        }
-
-        $cacheKey = 'video_' . $this->id;
-
-        // Get the image if it's not cached
-        if (!$this->cache->hasImage($cacheKey)) {
-            $picture = array_pop($this->data['pictures']['sizes']);
-            $request = new Request();
-            $request->send($picture['link']);
-
-            if ($request->hasError()) {
-                System::log(sprintf('Unable to download Vimeo video image "%s"', $picture['link']), __METHOD__, TL_ERROR);
-
-                return '';
-            }
-
-            // Store the video image in the cache
-            $this->cache->setImage($cacheKey, $request->response);
-        }
-
-        return $this->cache->getImage($cacheKey);
+        $template->album      = ($this->album !== null) ? $this->album->getData() : [];
     }
 }

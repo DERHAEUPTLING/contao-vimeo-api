@@ -26,5 +26,5 @@ if (\Contao\Input::get('do') === 'login') {
  * Add the fields
  */
 $GLOBALS['TL_DCA']['tl_user']['fields']['vimeo_purge'] = [
-    'input_field_callback' => ['Derhaeuptling\VimeoApi\UserDataContainer', 'generatePurgeField'],
+    'input_field_callback' => ['Derhaeuptling\VimeoApi\DataContainer\UserContainer', 'generatePurgeField'],
 ];

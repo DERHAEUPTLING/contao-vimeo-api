@@ -14,7 +14,7 @@
 /**
  * Extend default palette
  */
-$GLOBALS['TL_DCA']['tl_settings']['palettes']['default'] .= ';{vimeo_legend},vimeo_explanation,vimeo_clientId,vimeo_clientSecret,vimeo_accessToken,vimeo_imageIndex';
+$GLOBALS['TL_DCA']['tl_settings']['palettes']['default'] .= ';{vimeo_legend},vimeo_explanation,vimeo_clientId,vimeo_clientSecret,vimeo_accessToken,vimeo_imageIndex,vimeo_allImages';
 
 /**
  * Add fields
@@ -54,4 +54,11 @@ $GLOBALS['TL_DCA']['tl_settings']['fields']['vimeo_imageIndex'] = [
     'exclude'                 => true,
     'inputType'               => 'text',
     'eval'                    => array('rgxp'=>'digit', 'minval'=>1, 'tl_class'=>'w50'),
+];
+
+$GLOBALS['TL_DCA']['tl_settings']['fields']['vimeo_allImages'] = [
+    'label'                   => &$GLOBALS['TL_LANG']['tl_settings']['vimeo_allImages'],
+    'exclude'                 => true,
+    'inputType'               => 'checkbox',
+    'eval'                    => array('tl_class'=>'w50'),
 ];

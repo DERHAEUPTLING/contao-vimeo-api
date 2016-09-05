@@ -16,9 +16,11 @@ namespace Derhaeuptling\VimeoApi\ContentElement;
 use Contao\Config;
 use Contao\ContentElement;
 use Contao\FrontendTemplate;
-use Derhaeuptling\VimeoApi\VimeoApi;
-use Derhaeuptling\VimeoApi\VideoCache;
-use Derhaeuptling\VimeoApi\VimeoVideo;
+use Derhaeuptling\VimeoApi\Cache\Cache;
+use Derhaeuptling\VimeoApi\Client;
+use Derhaeuptling\VimeoApi\DataProvider\StandardProvider;
+use Derhaeuptling\VimeoApi\Factory;
+use Derhaeuptling\VimeoApi\Video;
 
 class AlbumElement extends ContentElement
 {
@@ -39,8 +41,8 @@ class AlbumElement extends ContentElement
             return '';
         }
 
-        if (TL_MODE == 'BE') {
-            return '<p><a href="https://vimeo.com/album/' . $this->vimeo_albumId . '" target="_blank">https://vimeo.com/album/' . $this->vimeo_albumId . '</a></p>';
+        if (TL_MODE === 'BE') {
+            return '<p><a href="https://vimeo.com/album/'.$this->vimeo_albumId.'" target="_blank">https://vimeo.com/album/'.$this->vimeo_albumId.'</a></p>';
         }
 
         return parent::generate();
@@ -51,28 +53,36 @@ class AlbumElement extends ContentElement
      */
     protected function compile()
     {
-        $api    = new VimeoApi(new VideoCache());
-        $client = $api->getClient();
-
-        // Get the album data
-        $album = $api->getAlbum($client, $this->vimeo_albumId);
-        $this->Template->setData($album);
-
-        $posterSize = deserialize($this->size, true);
-        $videos     = [];
-
-        // Generate the videos
-        /** @var VimeoVideo $video */
-        foreach ($api->getAlbumVideos(
-            $client,
+        $dataProvider = new StandardProvider(new Cache(), Client::getInstance());
+        $factory      = new Factory($dataProvider);
+        $album        = $factory->createAlbum(
             $this->vimeo_albumId,
             true,
             $this->vimeo_sorting,
             $this->vimeo_sortingDirection
-        ) as $video) {
-            // Fetch the image data
-            if (($image = $api->getVideoImage($client, $video->getId(), Config::get('vimeo_imageIndex'))) !== null) {
-                $video->setPicturesData($image);
+        );
+
+        if ($album === null) {
+            return;
+        }
+
+        $this->Template->setData($album->getData());
+        $posterSize = deserialize($this->size, true);
+        $videos     = [];
+
+        // Generate the videos
+        /** @var Video $video */
+        foreach ($album->getVideos() as $video) {
+            // Set the images
+            if (Config::get('vimeo_allImages') && ($images = $dataProvider->getVideoImages($video->getId())) !== null) {
+                $video->setPicturesData($images);
+            }
+
+            $image = $dataProvider->getVideoImage($video->getId(), Config::get('vimeo_imageIndex'));
+
+            // Set the poster
+            if ($image !== null) {
+                $video->setPoster($image);
             }
 
             $video->setPosterSize($posterSize);

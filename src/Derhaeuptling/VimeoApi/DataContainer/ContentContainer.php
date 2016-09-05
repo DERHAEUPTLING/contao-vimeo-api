@@ -11,15 +11,15 @@
  * @license LGPL
  */
 
-namespace Derhaeuptling\VimeoApi;
+namespace Derhaeuptling\VimeoApi\DataContainer;
 
 use Contao\ContentModel;
 use Contao\DataContainer;
 use Contao\Message;
 use Contao\System;
-use Derhaeuptling\VimeoApi\Maintenance\CacheRebuilder;
+use Derhaeuptling\VimeoApi\Cache\Rebuilder;
 
-class ContentDataContainer
+class ContentContainer
 {
     /**
      * Rebuild Vimeo cache
@@ -28,7 +28,7 @@ class ContentDataContainer
      */
     public function rebuildVimeoCache(DataContainer $dc)
     {
-        $rebuilder = new CacheRebuilder();
+        $rebuilder = new Rebuilder();
 
         try {
             $result = $rebuilder->rebuildElementCache(ContentModel::findByPk($dc->id));
@@ -44,9 +44,9 @@ class ContentDataContainer
             $result = false;
         }
 
-        if ($result) {
+        if ($result === true) {
             Message::addConfirmation($GLOBALS['TL_LANG']['tl_content']['vimeo_cacheConfirm']);
-        } else {
+        } elseif ($result === false) {
             Message::addError($GLOBALS['TL_LANG']['tl_content']['vimeo_cacheError']);
         }
     }
