@@ -115,7 +115,7 @@ class SingleRebuildProvider extends StandardProvider implements ProviderInterfac
                 $this->setRebuilt($key);
 
                 // Rebuild the album videos
-                $this->rebuildAlbumVideos($albumId);
+                $this->getAlbumVideos($albumId);
             }
 
             $this->setRebuilt($cacheKey);
@@ -145,14 +145,14 @@ class SingleRebuildProvider extends StandardProvider implements ProviderInterfac
             $this->setRebuilt($cacheKey);
 
             // Rebuild the album videos
-            $this->rebuildAlbumVideos($albumId);
+            $this->getAlbumVideos($albumId);
         }
 
         return parent::getAlbum($albumId);
     }
 
     /**
-     * Rebuild the album videos
+     * Get the album videos
      *
      * @param int    $albumId
      * @param string $sorting
@@ -160,7 +160,7 @@ class SingleRebuildProvider extends StandardProvider implements ProviderInterfac
      *
      * @return array|null
      */
-    protected function rebuildAlbumVideos($albumId, $sorting = null, $direction = null)
+    public function getAlbumVideos($albumId, $sorting = null, $direction = null)
     {
         $albumId  = (int)$albumId;
         $cacheKey = 'album_videos_'.$albumId.($sorting ? ('_'.$sorting) : '').($direction ? ('_'.$direction) : '');
@@ -179,14 +179,14 @@ class SingleRebuildProvider extends StandardProvider implements ProviderInterfac
                 $this->setRebuilt($key);
 
                 // Also set album by video data
-                if (($albumData = $this->getAlbum($albumId)) !== null) {
-                    $this->cache->setReference('album_video_'.$videoId, 'album_'.$this->extractAlbumId($albumData));
-                }
+                $this->cache->setReference('album_video_'.$videoId, 'album_'.$albumId);
             }
 
             $this->cache->setData($cacheKey, $albumVideosData);
             $this->setRebuilt($cacheKey);
         }
+
+        return parent::getAlbumVideos($albumId, $sorting, $direction);
     }
 
     /**
