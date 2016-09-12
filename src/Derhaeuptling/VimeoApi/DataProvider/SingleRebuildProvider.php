@@ -111,25 +111,11 @@ class SingleRebuildProvider extends StandardProvider implements ProviderInterfac
                 $albumId = $this->extractAlbumId($album);
                 $key     = 'album_'.$albumId;
 
-                // Get the cached album before overriding its data
-                if ($this->cache->hasData($key)) {
-                    $cachedAlbum = $this->cache->getData($key);
-                } else {
-                    $cachedAlbum = null;
-                }
-
                 $this->cache->setData($key, $album);
                 $this->setRebuilt($key);
 
-                // Get the album videos only if the album has been not cached yet or has been modified since last time
-                if ($cachedAlbum === null || $cachedAlbum['modified_time'] !== $album['modified_time']) {
-                    $this->rebuildAlbumVideos($albumId);
-                }
-
-                // Mark the videos as rebuilt
-                foreach ($this->getAlbumVideos($albumId) as $video) {
-                    $this->setRebuilt('video_'.$this->extractVideoId($video));
-                }
+                // Rebuild the album videos
+                $this->rebuildAlbumVideos($albumId);
             }
 
             $this->setRebuilt($cacheKey);
@@ -155,25 +141,11 @@ class SingleRebuildProvider extends StandardProvider implements ProviderInterfac
                 return null;
             }
 
-            // Get the cached album before overriding its data
-            if ($this->cache->hasData($cacheKey)) {
-                $cachedAlbum = $this->cache->getData($cacheKey);
-            } else {
-                $cachedAlbum = null;
-            }
-
             $this->cache->setData($cacheKey, $albumData);
             $this->setRebuilt($cacheKey);
 
-            // Get the album videos only if the album has been not cached yet or has been modified since last time
-            if ($cachedAlbum === null || $cachedAlbum['modified_time'] !== $albumData['modified_time']) {
-                $this->rebuildAlbumVideos($albumId);
-            }
-
-            // Mark the videos as rebuilt
-            foreach ($this->getAlbumVideos($albumId) as $video) {
-                $this->setRebuilt('video_'.$this->extractVideoId($video));
-            }
+            // Rebuild the album videos
+            $this->rebuildAlbumVideos($albumId);
         }
 
         return parent::getAlbum($albumId);

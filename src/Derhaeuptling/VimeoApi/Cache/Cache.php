@@ -158,19 +158,6 @@ class Cache
     }
 
     /**
-     * Mark data as non obsolete
-     *
-     * @param string $key
-     */
-    public function markDataNonObsolete($key)
-    {
-        if (($model = $this->getModel($key)) !== null) {
-            $model->obsolete = '';
-            $model->save();
-        }
-    }
-
-    /**
      * Return true if the data is obsolete
      *
      * @param string $key

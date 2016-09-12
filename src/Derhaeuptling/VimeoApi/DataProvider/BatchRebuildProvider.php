@@ -42,22 +42,10 @@ class BatchRebuildProvider extends StandardProvider implements ProviderInterface
             $albumId  = $this->extractAlbumId($album);
             $cacheKey = 'album_'.$albumId;
 
-            // Get the cached album before overriding its data
-            if ($this->cache->hasData($cacheKey)) {
-                $cachedAlbum = $this->cache->getData($cacheKey);
-            } else {
-                $cachedAlbum = null;
-            }
-
             $this->cache->setData($cacheKey, $album);
 
-            // Get the album videos only if the album has been not cached yet or has been modified since last time
-            if ($cachedAlbum === null || $cachedAlbum['modified_time'] !== $album['modified_time']) {
-                $this->getAlbumVideos($albumId);
-            } else {
-                // Mark the data as non obsolete so it does not get refreshed anymore
-                $this->cache->markDataNonObsolete('album_videos_'.$albumId);
-            }
+            // Rebuild the album videos
+            $this->getAlbumVideos($albumId);
         }
     }
 
