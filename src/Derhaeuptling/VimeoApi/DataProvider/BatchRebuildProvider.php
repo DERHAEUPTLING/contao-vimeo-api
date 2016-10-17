@@ -112,7 +112,7 @@ class BatchRebuildProvider extends StandardProvider implements ProviderInterface
     public function getAlbumByVideo($videoId)
     {
         $videoId  = (int)$videoId;
-        $cacheKey = 'album_video_';
+        $cacheKey = 'album_video_'.$videoId;
 
         if ($this->cache->isDataObsolete($cacheKey)) {
             if (($albums = $this->getAlbums()) === null) {
@@ -135,7 +135,9 @@ class BatchRebuildProvider extends StandardProvider implements ProviderInterface
             }
 
             // Set the reference to album data
-            $this->cache->setReference($cacheKey, 'album_'.$this->extractAlbumId($albumData));
+            if (count($albumData) > 0) {
+                $this->cache->setReference($cacheKey, 'album_'.$this->extractAlbumId($albumData));
+            }
         }
 
         return parent::getAlbumByVideo($videoId);
